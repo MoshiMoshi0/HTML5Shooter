@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 7px;
+            background-color: rgba(255,255,255,0);
+        }
+
+        canvas {
+            border: solid 1px rgba(0,0,0,0.15);
+        }
+    </style>
+    <script src="http://code.createjs.com/createjs-2013.05.14.min.js"></script>
+    <script src="js/lib/input.js"></script>
+    <script src="js/lib/prototype.js"></script>
+    <script src="js/lib/collision.js"></script>
+    <script src="js/Entity.js"></script>
+    <script src="js/Bullet.js"></script>
+    <script src="js/World.js"></script>
+    <script src="js/Player.js"></script>
+    <script src="js/EnemySequence.js"></script>
+    <script src="js/EnemyPath.js"></script>
+    <script src="js/Enemy.js"></script>
+    <script>
+        Math.clip = function(number, min, max) { return Math.max(min, Math.min(number, max)); }
+
+        var context;
+        var canvas;
+        var stage;
+
+        var world;
+        function init(){
+            canvas = document.getElementById("container");
+            context = canvas.getContext( "2d" );
+            stage = new createjs.Stage( canvas );
+            world = new World( stage );
+
+            ut.initInput();
+            createjs.Ticker.addListener(window);
+            createjs.Ticker.useRAF = true;
+            createjs.Ticker.setFPS( 60 );
+
+            var path0 = new EnemyPath( stage, new createjs.Point(0,0), new createjs.Point(0,100), new createjs.Point(200,100), new createjs.Point(200,200) );
+            var path1 = new EnemyPath( stage, new createjs.Point(200,200), new createjs.Point(0,250), new createjs.Point(400,50), new createjs.Point(400,0) );
+            var path = new ComplexEnemyPath( stage, [path0, path1] );
+
+            var tweenInfo = { duration: 6000, ease: createjs.Ease.circOut };
+            world.addSequence( path, tweenInfo, 5, 200, [SmallEnemy, BigEnemy, SmallEnemy, BigEnemy, SmallEnemy] );
+        }
+
+        function tick(){
+            var deltaTime = createjs.Ticker.getInterval() / 1000;
+
+            world.update( deltaTime );
+            stage.update();
+        }
+    </script>
+</head>
+<body onload="init()">
+    <canvas id="container" width="600" height="480"></canvas>
+</body>
+</html>
