@@ -6,29 +6,26 @@
  * To change this template use File | Settings | File Templates.
  */
 
-var Enemy = Class.create( Entity, {
-    initialize: function( $super, world, path, tween, bitmap ){
-        $super( world, bitmap );
+var Enemy = Class.create( DamageableEntity, {
+    initialize: function( $super, world, path, tween, bitmap, hp ){
+        $super( world, bitmap, hp );
 
         this.tween = tween;
         this.path = path;
-        this.hp = 1;
 
-        this.x = 0;
-        this.y = 0;
+        var point = this.path.getPointOnPath( this.tween.target.value );
+        this.shape.x = this.x = point.x - this.shape.width / 2;
+        this.shape.y = this.y = point.y - this.shape.height / 2;
     },
 
     update: function( $super, deltaTime ){
         var point = this.path.getPointOnPath( this.tween.target.value );
 
-        this.shape.x = this.x = point.x;
-        this.shape.y = this.y = point.y;
+        this.shape.x = this.x = point.x - this.shape.width / 2;
+        this.shape.y = this.y = point.y - this.shape.height / 2;
 
         this.tween.tick( deltaTime );
-    },
-
-    isAlive: function( $super ){
-        return $super() && this.hp > 0;
+        this.shape.rotation = -Math.atan2( this.world.player.x - this.x, this.world.player.y - this.y ) * 180 / Math.PI - 90;
     },
 
     destroy: function( $super ){
@@ -38,13 +35,13 @@ var Enemy = Class.create( Entity, {
 
 var SmallEnemy = Class.create( Enemy, {
     initialize: function( $super, world, path, tween ){
-        $super( world, path, tween, "images/6-1.png" );
+        $super( world, path, tween, "images/6-1.png", 1 );
     }
 });
 
 var BigEnemy = Class.create( Enemy, {
     initialize: function( $super, world, path, tween ){
-        $super( world, path, tween, "images/0-0.png" );
+        $super( world, path, tween, "images/0-0.png", 4 );
         this.tickTime = 0;
     },
 
@@ -53,13 +50,12 @@ var BigEnemy = Class.create( Enemy, {
 
         this.tickTime++;
         if( this.tickTime % 10 == 0 ){
-            var dx = this.world.player.x - this.x + Math.random();
-            var dy = this.world.player.y - this.y + Math.random();
-            var len = Math.sqrt( dx * dx + dy * dy );
-            var vx = dx / len * 10;
-            var vy = dy / len * 10;
+            var nx = this.world.player.x - this.x + Math.random();
+            var ny = this.world.player.y - this.y + Math.random();
+            var len = Math.sqrt( nx*nx + ny*ny );
+            nx /= len; ny /= len;
 
-            var bullet = new Bullet( this.world, this.x, this.y, vx, vy );
+            var bullet = new EnemyBullet( this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * 5, ny * 5 );
             this.world.addEntity( bullet );
         }
     }

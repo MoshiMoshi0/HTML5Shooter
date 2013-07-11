@@ -22,8 +22,7 @@ var EnemyPath = Class.create({
     },
 
     getPointOnPath: function( t ){
-        var tt = 1 - t;
-        var a = tt*tt*tt; var b = 3*tt*tt*t; var c = 3*tt*t*t; var d = t*t*t;
+        var tt = 1 - t; var a = tt*tt*tt; var b = 3*tt*tt*t; var c = 3*tt*t*t; var d = t*t*t;
         var rx = a * this.points[0].x + b * this.points[1].x + c * this.points[2].x + d * this.points[3].x;
         var ry = a * this.points[0].y + b * this.points[1].y + c * this.points[2].y + d * this.points[3].y;
 

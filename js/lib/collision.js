@@ -29,9 +29,9 @@
  **/
 
 this.ndgmr = this.ndgmr || {};
+//ndgmr.DEBUG = true;
 
 (function() {
-
     var collisionCanvas = document.createElement('canvas');
     var collisionCtx = collisionCanvas.getContext('2d');
     collisionCtx.save();

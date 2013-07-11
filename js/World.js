@@ -17,14 +17,25 @@ var World = Class.create({
     update: function( deltaTime ){
         for( var i = this.entities.length - 1; i >= 0 ; i-- ){
             var e = this.entities[i];
-            e.update( deltaTime );
 
             if( e instanceof Bullet ){
-                if( e instanceof Bullet ){
-                    var collision = ndgmr.checkPixelCollision( this.player.shape, e.shape );
+                if( e instanceof EnemyBullet ){
+                    var collision = ndgmr.checkPixelCollision( this.player.shape, e.shape, 0.5 );
                     if( collision ){
-                        //this.player.damage( e.damage );
+                        this.player.damage( e.damage );
                         e.setAlive( false );
+                    }
+                }else if( e instanceof PlayerBullet ){
+                    for( var j = this.entities.length - 1; j >= 0; j-- ){
+                        var o = this.entities[j];
+
+                        if( !(o instanceof DamageableEntity) ) continue;
+
+                        var collision = ndgmr.checkPixelCollision(o.shape, e.shape, 0.5 );
+                        if( collision ){
+                            o.damage( e.damage );
+                            e.setAlive( false );
+                        }
                     }
                 }
             }
@@ -32,7 +43,10 @@ var World = Class.create({
             if( !e.isAlive() ){
                 e.destroy();
                 this.entities.splice( i, 1 );
+                continue;
             }
+
+            e.update( deltaTime );
         }
 
         for( var i = this.sequences.length - 1; i >= 0; i-- ){
@@ -44,7 +58,6 @@ var World = Class.create({
             }
         }
 
-        console.log( this.entities.length );
         this.player.update( deltaTime );
     },
 

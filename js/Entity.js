@@ -11,9 +11,14 @@ var Entity = Class.create({
         this.stage = world.stage;
         this.world = world;
         this.alive = true;
+
         this.shape = new createjs.Bitmap( bitmap );
+        this.shape.width = this.shape.image.width;
+        this.shape.height = this.shape.image.height;
+
         this.shape.regX = parseInt( this.shape.width / 2 );
         this.shape.regY = parseInt( this.shape.height / 2 );
+
         this.stage.addChild( this.shape );
     },
 

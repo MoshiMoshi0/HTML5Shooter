@@ -7,12 +7,12 @@
  */
 
 var Bullet = Class.create( Entity, {
-    initialize: function( $super, world, x, y, vx, vy, damage ){
-        $super( world, "images/7-0.png" );
+    initialize: function( $super, world, x, y, vx, vy, damage, bitmap ){
+        $super( world, bitmap );
 
         this.shape.x = this.x = x;
         this.shape.y = this.y = y;
-        this.shape.rotation = Math.atan2( vx, vy ) + 90;
+        this.shape.rotation = -Math.atan2( vx, vy ) * 180 / Math.PI - 90;
 
         this.vx = vx;
         this.vy = vy;
@@ -28,10 +28,22 @@ var Bullet = Class.create( Entity, {
     },
 
     isAlive: function( $super ){
-        return !(this.x < -20 || this.x >= this.stage.canvas.getWidth() + 20 || this.y < -20 || this.y >= this.stage.canvas.getHeight() + 20 );
+        return $super() && !(this.x < -20 || this.x >= this.stage.canvas.getWidth() + 20 || this.y < -20 || this.y >= this.stage.canvas.getHeight() + 20 );
     },
 
     destroy: function( $super ){
         this.stage.removeChild( this.shape );
+    }
+});
+
+var EnemyBullet = Class.create( Bullet, {
+    initialize: function( $super, world, x, y, vx, vy, damage ){
+        $super( world, x, y, vx, vy, damage, "images/7-0.png" );
+    }
+});
+
+var PlayerBullet = Class.create( Bullet, {
+    initialize: function( $super, world, x, y, vx, vy, damage ){
+        $super( world, x, y, vx, vy, damage, "images/7-8.png" );
     }
 });

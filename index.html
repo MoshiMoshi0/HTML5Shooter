@@ -17,7 +17,9 @@
     <script src="js/lib/input.js"></script>
     <script src="js/lib/prototype.js"></script>
     <script src="js/lib/collision.js"></script>
+    <script src="js/Parallax.js"></script>
     <script src="js/Entity.js"></script>
+    <script src="js/DamageableEntity.js"></script>
     <script src="js/Bullet.js"></script>
     <script src="js/World.js"></script>
     <script src="js/Player.js"></script>
@@ -25,36 +27,46 @@
     <script src="js/EnemyPath.js"></script>
     <script src="js/Enemy.js"></script>
     <script>
-        Math.clip = function(number, min, max) { return Math.max(min, Math.min(number, max)); }
+        Math.clip = function(number, min, max) { return Math.max(min, Math.min(number, max)); };
+        Math.mod = function( a, b ){ return ((a % b) + b) % b; };
 
-        var context;
         var canvas;
         var stage;
 
         var world;
+        var parallax;
         function init(){
             canvas = document.getElementById("container");
-            context = canvas.getContext( "2d" );
             stage = new createjs.Stage( canvas );
-            world = new World( stage );
 
             ut.initInput();
             createjs.Ticker.addListener(window);
             createjs.Ticker.useRAF = true;
             createjs.Ticker.setFPS( 60 );
 
-            var path0 = new EnemyPath( stage, new createjs.Point(0,0), new createjs.Point(0,100), new createjs.Point(200,100), new createjs.Point(200,200) );
-            var path1 = new EnemyPath( stage, new createjs.Point(200,200), new createjs.Point(0,250), new createjs.Point(400,50), new createjs.Point(400,0) );
-            var path = new ComplexEnemyPath( stage, [path0, path1] );
+            stage.context = canvas.getContext( "2d" );
+            stage.autoClear = false;
+            stage.width = canvas.width;
+            stage.height = canvas.height;
 
-            var tweenInfo = { duration: 6000, ease: createjs.Ease.circOut };
+            stage.addEventListener("stagemousedown", function(e) { stage.mouseDown = true; });
+            stage.addEventListener("stagemouseup", function(e) { stage.mouseDown = false; });
+
+            world = new World( stage );
+            parallax = new Parallax( world, ["images/ParallaxStars.png"], [1] );
+            var path0 = new EnemyPath( stage, new createjs.Point(0,0), new createjs.Point(0,100), new createjs.Point(200,100), new createjs.Point(600,400) );
+            var path = new ComplexEnemyPath( stage, [path0] );
+
+            var tweenInfo = { duration: 6000, ease: createjs.Ease.linear};
             world.addSequence( path, tweenInfo, 5, 200, [SmallEnemy, BigEnemy, SmallEnemy, BigEnemy, SmallEnemy] );
         }
 
         function tick(){
             var deltaTime = createjs.Ticker.getInterval() / 1000;
 
+            stage.clear();
             world.update( deltaTime );
+            parallax.update( deltaTime );
             stage.update();
         }
     </script>
