@@ -17,6 +17,8 @@
     <script src="js/lib/input.js"></script>
     <script src="js/lib/prototype.js"></script>
     <script src="js/lib/collision.js"></script>
+    <script src="js/lib/quadtree.js"></script>
+    <script src="js/lib/seedrandom.js"></script>
     <script src="js/Parallax.js"></script>
     <script src="js/Entity.js"></script>
     <script src="js/DamageableEntity.js"></script>
@@ -34,15 +36,18 @@
         var stage;
 
         var world;
-        var parallax;
+        //var parallax;
         function init(){
             canvas = document.getElementById("container");
             stage = new createjs.Stage( canvas );
 
             ut.initInput();
-            createjs.Ticker.addListener(window);
+            createjs.Ticker.addListener(window, false);
             createjs.Ticker.useRAF = true;
             createjs.Ticker.setFPS( 60 );
+            createjs.Ticker.removeListener( createjs.Tween );
+
+            Math.seedrandom( 0 );
 
             stage.context = canvas.getContext( "2d" );
             stage.autoClear = false;
@@ -53,12 +58,7 @@
             stage.addEventListener("stagemouseup", function(e) { stage.mouseDown = false; });
 
             world = new World( stage );
-            parallax = new Parallax( world, ["images/ParallaxStars.png"], [1] );
-            var path0 = new EnemyPath( stage, new createjs.Point(0,0), new createjs.Point(0,100), new createjs.Point(200,100), new createjs.Point(600,400) );
-            var path = new ComplexEnemyPath( stage, [path0] );
-
-            var tweenInfo = { duration: 6000, ease: createjs.Ease.linear};
-            world.addSequence( path, tweenInfo, 5, 200, [SmallEnemy, BigEnemy, SmallEnemy, BigEnemy, SmallEnemy] );
+            //parallax = new Parallax( world, [ "images/ParallaxBlack.png", "images/ParallaxStars.png", "images/ParallaxStars.png"], [1, 1, 2] );
         }
 
         function tick(){
@@ -66,12 +66,12 @@
 
             stage.clear();
             world.update( deltaTime );
-            parallax.update( deltaTime );
+            //parallax.update( deltaTime );
             stage.update();
         }
     </script>
 </head>
 <body onload="init()">
-    <canvas id="container" width="600" height="480"></canvas>
+    <canvas id="container" width="1280" height="720"></canvas>
 </body>
 </html>

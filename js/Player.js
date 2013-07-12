@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-var KEY_STEP = 0.15;
+var KEY_STEP = 0.05;
 var X_ACCEL_STEP = 0.75;
 var Y_ACCEL_STEP = 0.75;
 
@@ -15,11 +15,11 @@ var MAX_Y_ACCEL = 1;
 var MAX_X_SPEED = 1.5;
 var MAX_Y_SPEED = 1;
 
-var ACCEL_MUL = 20;
-var SPEED_MUL = 200;
+var ACCEL_MUL = 80;
+var SPEED_MUL = 300;
 
 var FRICTION_P = 0.98;
-var FRICTION_R = 0.92;
+var FRICTION_R = 0.40;
 
 var Player = Class.create( DamageableEntity, {
     initialize: function( $super, world ){
@@ -96,19 +96,19 @@ var Player = Class.create( DamageableEntity, {
         this.y += this.vy * deltaTime * SPEED_MUL;
 
         if (!(ut.isKeyPressed(ut.KEY_A) || ut.isKeyPressed(ut.KEY_D))) {
-            this.ax *= FRICTION_R;
+            //this.ax *= FRICTION_R;
             this.vx *= FRICTION_R;
         } else {
-            this.ax *= FRICTION_P;
-            this.vx *= FRICTION_P;
+            //this.ax *= FRICTION_P;
+            //this.vx *= FRICTION_P;
         }
 
         if (!(ut.isKeyPressed(ut.KEY_W) || ut.isKeyPressed(ut.KEY_S))) {
-            this.ay *= FRICTION_R;
+            //this.ay *= FRICTION_R;
             this.vy *= FRICTION_R;
         } else {
-            this.ay *= FRICTION_P;
-            this.vy *= FRICTION_P;
+            //this.ay *= FRICTION_P;
+            //this.vy *= FRICTION_P;
         }
     },
 
@@ -116,14 +116,22 @@ var Player = Class.create( DamageableEntity, {
         this.shootTime += deltaTime;
         this.shape.rotation = -Math.atan2(this.stage.mouseX - this.x, this.stage.mouseY - this.y) * 180 / Math.PI + 90;
 
-        if( this.stage.mouseDown && this.shootTime >= 0.2 ){
-            var nx = this.stage.mouseX - this.x;
+        if( this.stage.mouseDown && this.shootTime >= 0.1 ){
+            for( var i = -2; i <= 2; i++ ){
+                var angle = this.shape.rotation + i * 3;
+                var nx = Math.cos( angle * Math.PI / 180 );
+                var ny = Math.sin( angle * Math.PI / 180 );
+
+
+                var bullet = new PlayerBullet(this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * 10, ny * 10, 1);
+                this.world.addEntity(bullet);
+            }
+
+            /*var nx = this.stage.mouseX - this.x;
             var ny = this.stage.mouseY - this.y;
             var len = Math.sqrt( nx*nx + ny*ny );
-            nx /= len; ny /= len;
+            nx /= len; ny /= len;*/
 
-            var bullet = new PlayerBullet(this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * 5, ny * 5, 1);
-            this.world.addEntity(bullet);
             this.shootTime = 0;
         }
     },

@@ -6,9 +6,9 @@
  * To change this template use File | Settings | File Templates.
  */
 
-var Bullet = Class.create( Entity, {
+var Bullet = Class.create( DamageableEntity, {
     initialize: function( $super, world, x, y, vx, vy, damage, bitmap ){
-        $super( world, bitmap );
+        $super( world, bitmap, 1 );
 
         this.shape.x = this.x = x;
         this.shape.y = this.y = y;

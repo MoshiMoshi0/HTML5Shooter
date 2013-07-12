@@ -10,6 +10,8 @@ var DamageableEntity = Class.create( Entity, {
     initialize: function( $super, world, bitmap, hp ){
         $super( world, bitmap );
         this.hp = hp;
+        this.width = this.shape.width;
+        this.height = this.shape.height;
     },
 
     damage: function( damage ){

@@ -13,7 +13,7 @@ var EnemyPath = Class.create({
 
         var g = new createjs.Graphics();
         g.setStrokeStyle(1);
-        g.beginStroke(createjs.Graphics.getRGB(0,0,0));
+        g.beginStroke( "rgb(0,0,255)" );
         g.moveTo( p0.x, p0.y );
         g.bezierCurveTo( p1.x, p1.y, p2.x, p2.y, p3.x, p3.y );
 
