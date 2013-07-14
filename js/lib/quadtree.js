@@ -1,431 +1,244 @@
 /*
- The MIT License
-
- Copyright (c) 2011 Mike Chambers
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
+ *  Copyright (C) <2013>  <Mateusz Sławomir Lach>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ *  http://www.gnu.org/copyleft/lesser.html
  */
 
-
-/**
- * A QuadTree implementation in JavaScript, a 2d spatial subdivision algorithm.
- * @module QuadTree
- **/
-
-(function(window) {
-
-    /****************** QuadTree ****************/
-
-    /**
-     * QuadTree data structure.
-     * @class QuadTree
-     * @constructor
-     * @param {Object} An object representing the bounds of the top level of the QuadTree. The object
-     * should contain the following properties : x, y, width, height
-     * @param {Boolean} pointQuad Whether the QuadTree will contain points (true), or items with bounds
-     * (width / height)(false). Default value is false.
-     * @param {Number} maxDepth The maximum number of levels that the quadtree will create. Default is 4.
-     * @param {Number} maxChildren The maximum number of children that a node can contain before it is split into sub-nodes.
-     **/
-    function QuadTree(bounds, pointQuad, maxDepth, maxChildren)
+var QuadTree = function(x, y, width, height, level)
+{
+    this.width = width;
+    this.height= height;
+    this.x     = x;
+    this.y     = y;
+    this.level = level;
+    
+    this.sprites = new Array();
+    this.nodes   = null;
+    this.colors  = ['black', 'white', 'red', 'yellow', 'green'];
+    
+    var MAX_SPRITES_NUM = 8;
+    var MAX_LEVELS_NUM  = 4;
+    
+    this.draw = function(ctx)
     {
-        var node;
-        if(pointQuad)
+        if(this.nodes !== null)
         {
+            ctx.beginPath();
+            ctx.moveTo(this.x, this.y+(this.height/2));
+            ctx.lineTo(this.x+this.width, this.y+(this.height/2));
+            ctx.stroke();
 
-            node = new Node(bounds, 0, maxDepth, maxChildren);
+            ctx.beginPath();
+            ctx.moveTo(this.x+(this.width/2), this.y);
+            ctx.lineTo(this.x+(this.width/2), this.y+this.height);
+            ctx.stroke();
+            
+            
         }
-        else
+        oldStrokeStyle = ctx.strokeStyle;
+        ctx.strokeStyle = 'white';
+        ctx.strokeText(this.sprites.length, this.x+(this.width/2), this.y+(this.height/2) );
+        ctx.strokeStyle = oldStrokeStyle;
+        if(this.sprites !== null)
         {
-            node = new BoundsNode(bounds, 0, maxDepth, maxChildren);
-        }
-
-        this.root = node;
-    }
-
-    /**
-     * The root node of the QuadTree which covers the entire area being segmented.
-     * @property root
-     * @type Node
-     **/
-    QuadTree.prototype.root = null;
-
-
-    /**
-     * Inserts an item into the QuadTree.
-     * @method insert
-     * @param {Object|Array} item The item or Array of items to be inserted into the QuadTree. The item should expose x, y
-     * properties that represents its position in 2D space.
-     **/
-    QuadTree.prototype.insert = function(item)
-    {
-        if(item instanceof Array)
-        {
-            var len = item.length;
-
-            for(var i = 0; i < len; i++)
+            for(sprite in this.sprites)
             {
-                this.root.insert(item[i]);
+                ctx.beginPath();
+                oldStrokeStyle = ctx.strokeStyle;
+                ctx.strokeStyle = this.colors[this.level-1];
+                ctx.rect(this.sprites[sprite].x, this.sprites[sprite].y, this.sprites[sprite].width, this.sprites[sprite].height);
+                ctx.stroke();                    
+                ctx.closePath();
+                ctx.strokeStyle = oldStrokeStyle;
+            }
+        }
+        
+        if(this.nodes !== null)
+        {
+            this.nodes.topLeft.draw(ctx);
+            this.nodes.topRight.draw(ctx);
+            this.nodes.bottomLeft.draw(ctx);
+            this.nodes.bottomRight.draw(ctx);
+        }
+    }
+    
+    this.add = function(elem, x, y, width, height)
+    {
+        var quarter = this.getQuarter(x, y, width, height);
+        if(this.nodes !== null && quarter !== false)
+        {
+            this.nodes[quarter].add(elem, x, y, width, height);
+        } 
+        else if(this.sprites.length >= MAX_SPRITES_NUM && this.level < MAX_LEVELS_NUM)
+        {
+            this.sprites[this.sprites.length] = {'elem':elem, 'x':x, 'y':y, 'width':width, 'height':height};
+            this.split();
+            
+            for(var i=0; i<this.sprites.length;)
+            {
+                var sprite  = this.sprites[i];
+                quarter = this.getQuarter(sprite.x, sprite.y, sprite.width, sprite.height);
+                
+                if(quarter !== false) //if belongs to some of child quarter
+                {
+                    this.nodes[quarter].add(sprite.elem, sprite.x, sprite.y, sprite.width, sprite.height);
+                    this.sprites.splice(i, 1);
+                }
+                else //if does not belong to any of child quarter
+                {
+                    i++;
+                }
             }
         }
         else
         {
-            this.root.insert(item);
+            this.sprites[this.sprites.length] = {'elem':elem, 'x':x, 'y':y, 'width':width, 'height':height};
+        }
+    };
+    
+    this.clone = function()
+    {
+        var cloned = new QuadTree;
+        for(prop in this)
+        {
+            cloned[prop] = this[prop];
+        }
+        return cloned;
+    };
+    
+    this.clear = function()
+    {
+        for(var i=0; i<this.sprites.length; i++)
+        {
+            this.sprites[i] = null;
+        }
+        this.sprites = new Array();
+        
+        if(this.nodes !== null)
+        {
+            this.nodes.topLeft.clear();
+            this.nodes.topRight.clear();
+            this.nodes.bottomLeft.clear();
+            this.nodes.bottomRight.clear();
+            this.nodes = null;
         }
     }
-
-    /**
-     * Clears all nodes and children from the QuadTree
-     * @method clear
-     **/
-    QuadTree.prototype.clear = function()
+    
+    this.split = function()
     {
-        this.root.clear();
-    }
+        if(this.nodes === null)
+        {
+            this.nodes = {topLeft: null, topRight: null, bottomLeft: null, bottomRight: null};
+            
+            var width  = parseInt(this.width/2);
+            var height = parseInt(this.height/2);
 
-    /**
-     * Retrieves all items / points in the same node as the specified item / point. If the specified item
-     * overlaps the bounds of a node, then all children in both nodes will be returned.
-     * @method retrieve
-     * @param {Object} item An object representing a 2D coordinate point (with x, y properties), or a shape
-     * with dimensions (x, y, width, height) properties.
-     **/
-    QuadTree.prototype.retrieve = function(item)
+            this.nodes.topLeft    = new QuadTree(this.x, this.y, width, height, this.level+1);
+            this.nodes.topRight   = new QuadTree(this.x+width, this.y, width, height, this.level+1);
+            this.nodes.bottomLeft = new QuadTree(this.x, this.y+height, width, height, this.level+1);
+            this.nodes.bottomRight= new QuadTree(this.x+width, this.y+height, width, height, this.level+1);
+        }
+    };
+    
+    this.count = function()
     {
-        //get a copy of the array of items
-        var out = this.root.retrieve(item).slice(0);
-        return out;
-    }
-
-    /************** Node ********************/
-
-
-    function Node(bounds, depth, maxDepth, maxChildren)
+        var result = this.sprites.length;
+        
+        if(this.nodes !== null)
+        {
+            result += (this.nodes.topLeft.count() + this.nodes.topRight.count()
+                        + this.nodes.bottomRight.count() + this.nodes.bottomLeft.count());
+        }
+        return result;
+    };
+    
+    this.getElemsNearby = function(x, y, width, height)
     {
-        this._bounds = bounds;
-        this.children = [];
-        this.nodes = [];
-
-        if(maxChildren)
+        var result = new Array();
+        for(var i=0; i<this.sprites.length; i++)
         {
-            this._maxChildren = maxChildren;
-
+            result[result.length] = this.sprites[i].elem;
         }
-
-        if(maxDepth)
+        
+        var quarter = this.getQuarter(x, y, width, height);
+        if(quarter !== false)
         {
-            this._maxDepth = maxDepth;
-        }
-
-        if(depth)
-        {
-            this._depth = depth;
-        }
-    }
-
-//subnodes
-    Node.prototype.nodes = null;
-    Node.prototype._classConstructor = Node;
-
-//children contained directly in the node
-    Node.prototype.children = null;
-    Node.prototype._bounds = null;
-
-//read only
-    Node.prototype._depth = 0;
-
-    Node.prototype._maxChildren = 4;
-    Node.prototype._maxDepth = 4;
-
-    Node.TOP_LEFT = 0;
-    Node.TOP_RIGHT = 1;
-    Node.BOTTOM_LEFT = 2;
-    Node.BOTTOM_RIGHT = 3;
-
-
-    Node.prototype.insert = function(item)
-    {
-        if(this.nodes.length)
-        {
-            var index = this._findIndex(item);
-
-            this.nodes[index].insert(item);
-
-            return;
-        }
-
-        this.children.push(item);
-
-        var len = this.children.length;
-        if(!(this._depth >= this._maxDepth) &&
-            len > this._maxChildren)
-        {
-            this.subdivide();
-
-            for(var i = 0; i < len; i++)
+            var subResult = this.nodes[quarter].getElemsNearby(x, y, width, height);
+            for(var j=0; j<subResult.length; j++)
             {
-                this.insert(this.children[i]);
+                result[result.length] = subResult[j];
             }
-
-            this.children.length = 0;
         }
-    }
-
-    Node.prototype.retrieve = function(item)
+        return result;
+    };
+    
+    this.getQuarter = function(x, y, width, height)
     {
-        if(this.nodes.length)
+        var result = null;
+        
+        if(this.nodes === null)
         {
-            var index = this._findIndex(item);
-
-            return this.nodes[index].retrieve(item);
-        }
-
-        return this.children;
-    }
-
-    Node.prototype._findIndex = function(item)
-    {
-        var b = this._bounds;
-        var left = (item.x > b.x + b.width / 2)? false : true;
-        var top = (item.y > b.y + b.height / 2)? false : true;
-
-        //top left
-        var index = Node.TOP_LEFT;
-        if(left)
-        {
-            //left side
-            if(!top)
-            {
-                //bottom left
-                index = Node.BOTTOM_LEFT;
-            }
+            result = false;
         }
         else
         {
-            //right side
-            if(top)
+            var horizontalBorder  = this.y + parseInt(this.height/2);
+            var verticalBorder    = this.x + parseInt(this.width/2);
+            
+            var isInTop    = (y <= horizontalBorder) && (y + height <= horizontalBorder);
+            var isInBottom = y > horizontalBorder;
+            
+            var isInLeft   = (x <= verticalBorder) && (x + width <= verticalBorder);
+            var isInRight  = (x > verticalBorder);
+            
+            if(isInTop)
             {
-                //top right
-                index = Node.TOP_RIGHT;
+                if(isInLeft)
+                {
+                    result = "topLeft";
+                }
+                else if(isInRight)
+                {
+                    result = "topRight";
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            else if(isInBottom)
+            {
+                if(isInLeft)
+                {
+                    result = "bottomLeft";
+                }
+                else if(isInRight)
+                {
+                    result = "bottomRight";
+                }
+                else
+                {
+                    result = false;
+                }
             }
             else
             {
-                //bottom right
-                index = Node.BOTTOM_RIGHT;
+                result = false;
             }
         }
-
-        return index;
-    }
-
-
-    Node.prototype.subdivide = function()
-    {
-        var depth = this._depth + 1;
-
-        var bx = this._bounds.x;
-        var by = this._bounds.y;
-
-        //floor the values
-        var b_w_h = (this._bounds.width / 2)|0;
-        var b_h_h = (this._bounds.height / 2)|0;
-        var bx_b_w_h = bx + b_w_h;
-        var by_b_h_h = by + b_h_h;
-
-        //top left
-        this.nodes[Node.TOP_LEFT] = new this._classConstructor({
-                x:bx,
-                y:by,
-                width:b_w_h,
-                height:b_h_h
-            },
-            depth);
-
-        //top right
-        this.nodes[Node.TOP_RIGHT] = new this._classConstructor({
-                x:bx_b_w_h,
-                y:by,
-                width:b_w_h,
-                height:b_h_h
-            },
-            depth);
-
-        //bottom left
-        this.nodes[Node.BOTTOM_LEFT] = new this._classConstructor({
-                x:bx,
-                y:by_b_h_h,
-                width:b_w_h,
-                height:b_h_h
-            },
-            depth);
-
-
-        //bottom right
-        this.nodes[Node.BOTTOM_RIGHT] = new this._classConstructor({
-                x:bx_b_w_h,
-                y:by_b_h_h,
-                width:b_w_h,
-                height:b_h_h
-            },
-            depth);
-    }
-
-    Node.prototype.clear = function()
-    {
-        this.children.length = 0;
-
-        var len = this.nodes.length;
-        for(var i = 0; i < len; i++)
-        {
-            this.nodes[i].clear();
-        }
-
-        this.nodes.length = 0;
-    }
-
-
-    /******************** BoundsQuadTree ****************/
-
-    function BoundsNode(bounds, depth, maxChildren, maxDepth)
-    {
-        Node.call(this, bounds, depth, maxChildren, maxDepth);
-        this._stuckChildren = [];
-    }
-
-    BoundsNode.prototype = new Node();
-    BoundsNode.prototype._classConstructor = BoundsNode;
-    BoundsNode.prototype._stuckChildren = null;
-
-//we use this to collect and conctenate items being retrieved. This way
-//we dont have to continuously create new Array instances.
-//Note, when returned from QuadTree.retrieve, we then copy the array
-    BoundsNode.prototype._out = [];
-
-    BoundsNode.prototype.insert = function(item)
-    {
-        if(this.nodes.length)
-        {
-            var index = this._findIndex(item);
-            var node = this.nodes[index];
-
-            //todo: make _bounds bounds
-            if(item.x >= node._bounds.x &&
-                item.x + item.width <= node._bounds.x + node._bounds.width &&
-                item.y >= node._bounds.y &&
-                item.y + item.height <= node._bounds.y + node._bounds.height)
-            {
-                this.nodes[index].insert(item);
-            }
-            else
-            {
-                this._stuckChildren.push(item);
-            }
-
-            return;
-        }
-
-        this.children.push(item);
-
-        var len = this.children.length;
-
-        if(!(this._depth >= this._maxDepth) &&
-            len > this._maxChildren)
-        {
-            this.subdivide();
-
-            for(var i = 0; i < len; i++)
-            {
-                this.insert(this.children[i]);
-            }
-
-            this.children.length = 0;
-        }
-    }
-
-    BoundsNode.prototype.getChildren = function()
-    {
-        return this.children.concat(this._stuckChildren);
-    }
-
-    BoundsNode.prototype.retrieve = function(item)
-    {
-        var out = this._out;
-        out.length = 0;
-        if(this.nodes.length)
-        {
-            var index = this._findIndex(item);
-
-            out.push.apply(out, this.nodes[index].retrieve(item));
-        }
-
-        out.push.apply(out, this._stuckChildren);
-        out.push.apply(out, this.children);
-
-        return out;
-    }
-
-    BoundsNode.prototype.clear = function()
-    {
-
-        this._stuckChildren.length = 0;
-
-        //array
-        this.children.length = 0;
-
-        var len = this.nodes.length;
-
-        if(!len)
-        {
-            return;
-        }
-
-        for(var i = 0; i < len; i++)
-        {
-            this.nodes[i].clear();
-        }
-
-        //array
-        this.nodes.length = 0;
-
-        //we could call the super clear function but for now, im just going to inline it
-        //call the hidden super.clear, and make sure its called with this = this instance
-        //Object.getPrototypeOf(BoundsNode.prototype).clear.call(this);
-    }
-
-    BoundsNode.prototype.getChildCount
-
-    window.QuadTree = QuadTree;
-
-    /*
-     //http://ejohn.org/blog/objectgetprototypeof/
-     if ( typeof Object.getPrototypeOf !== "function" ) {
-     if ( typeof "test".__proto__ === "object" ) {
-     Object.getPrototypeOf = function(object){
-     return object.__proto__;
-     };
-     } else {
-     Object.getPrototypeOf = function(object){
-     // May break if the constructor has been tampered with
-     return object.constructor.prototype;
-     };
-     }
-     }
-     */
-
-}(window));
+        return result;
+    };
+}

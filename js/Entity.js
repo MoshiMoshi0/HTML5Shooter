@@ -13,6 +13,7 @@ var Entity = Class.create({
         this.alive = true;
 
         this.shape = new createjs.Bitmap( bitmap );
+        this.shape.snapToPixel = true;
         this.shape.width = this.shape.image.width;
         this.shape.height = this.shape.image.height;
 

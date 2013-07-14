@@ -13,18 +13,25 @@ var Enemy = Class.create( DamageableEntity, {
         this.tween = tween;
         this.path = path;
 
+        this.categoryFlags = CollisionFlags.ENEMY;
+        this.maskFlags = CollisionFlags.PLAYER | CollisionFlags.PLAYERBULLET;
+
         this.tweenSpeed = 1;
         var point = this.path.getPointOnPath( this.tween.target.value );
-        this.shape.x = this.x = point.x - this.shape.width / 2;
-        this.shape.y = this.y = point.y - this.shape.height / 2;
+        this.shape.x = this.x = point.x;// - this.shape.width / 2;
+        this.shape.y = this.y = point.y;// - this.shape.height / 2;
+    },
+
+    isAlive: function( $super ){
+        return $super() && this.y <= this.stage.height + 20;
     },
 
     update: function( $super, deltaTime ){
         $super( deltaTime );
         var point = this.path.getPointOnPath( this.tween.target.value );
 
-        this.shape.x = this.x = point.x - this.shape.width / 2;
-        this.shape.y = this.y = point.y - this.shape.height / 2;
+        this.shape.x = this.x = point.x;// - this.shape.width / 2;
+        this.shape.y = this.y = point.y;// - this.shape.height / 2;
 
         this.tween.tick( deltaTime * this.tweenSpeed * 1000 );
         //this.shape.rotation = -Math.atan2( this.world.player.x - this.x, this.world.player.y - this.y ) * 180 / Math.PI - 90;
@@ -51,13 +58,13 @@ var BigEnemy = Class.create( Enemy, {
         $super( deltaTime );
 
         this.tickTime++;
-        if( this.tickTime % 7 == 0 ){
+        if( this.tickTime % 14 == 0 ){
             var nx = this.world.player.x - this.x + Math.random();
             var ny = this.world.player.y - this.y + Math.random();
             var len = Math.sqrt( nx*nx + ny*ny );
             nx /= len; ny /= len;
 
-            var bullet = new EnemyBullet( this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * 3, ny * 3 );
+            var bullet = new EnemyBullet( this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * 3, ny * 3, 3 );
             this.world.addEntity( bullet );
         }
     }
@@ -75,12 +82,12 @@ var SpecialEnemy = Class.create( Enemy, {
         $super( deltaTime );
 
         this.tickTime++;
-        if( this.tickTime % 3 == 0 ){
+        if( this.tickTime % 6 == 0 ){
             var nx = Math.cos( this.rot * Math.PI / 180 );
             var ny = Math.sin( this.rot * Math.PI / 180 );
             this.rot += 10;
 
-            var bullet = new EnemyBullet( this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * 2, ny * 2 );
+            var bullet = new EnemyBullet( this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * 2, ny * 2, 1 );
             this.world.addEntity( bullet );
         }
     }

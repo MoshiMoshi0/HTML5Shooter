@@ -6,24 +6,23 @@
  * To change this template use File | Settings | File Templates.
  */
 
-    var shape = new createjs.Shape();
 var World = Class.create({
     initialize: function( stage ){
        this.stage = stage;
        this.entities = [];
        this.sequences = [];
 
+       this.totalTime = 0;
        this.player = new Player( this );
        this.sequenceFactory = new EnemySequenceFactory( this );
-       this.quadTree = new QuadTree( { x: 0,y: 0, width: this.stage.width, height: this.stage.height }, false, 3 );
+       this.quadTree = new QuadTree( 0, 0,  this.stage.width,  this.stage.height, 0 );
 
-        this.stage.addChild( shape );
+       this.addEntity( this.player );
     },
 
     update: function( deltaTime ){
         this.totalTime += deltaTime;
 
-        this.solveCollisions();
         for( var i = this.entities.length - 1; i >= 0 ; i-- ){
             var e = this.entities[i];
 
@@ -45,91 +44,47 @@ var World = Class.create({
             }
         }
 
-        this.player.update( deltaTime );
-        if( this.sequences.length < 8 ){
+        if( this.sequences.length < this.totalTime % 5 ){
             this.sequences.push( this.sequenceFactory.getRandom() );
         }
 
-        this.renderQuad();
+        this.solveCollisions();
+        //this.quadTree.draw( this.stage.context );
     },
-
-     renderQuad: function()
-{
-    var g = shape.graphics;
-    g.clear();
-    g.setStrokeStyle(1);
-    g.beginStroke("rgb(0,0,0)");
-
-    this.drawNode(this.quadTree.root);
-},
-
- drawNode: function(node){
-    var bounds = node._bounds;
-    var g = shape.graphics;
-
-    g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
-
-    //console.log(node);
-    var children = node.getChildren();
-    var cLen = children.length;
-    var childNode;
-    if(cLen)
-    {
-        for(var j = 0; j < cLen; j++)
-        {
-            childNode = children[j];
-            g.beginStroke("rgb(0,0,0)");
-
-            g.drawRect(childNode.x, childNode.y, childNode.width, childNode.height);
-            //g.drawCircle(childNode.x, childNode.y,3);
-        }
-    }
-
-    var len = node.nodes.length;
-
-    for(var i = 0; i < len; i++)
-    {
-        this.drawNode(node.nodes[i]);
-    }
-},
 
     solveCollisions: function(){
         this.quadTree.clear();
         for( var i = 0; i < this.entities.length; i++ ){
             var e = this.entities[i];
             if( e instanceof DamageableEntity ){
-                this.quadTree.insert( e );
+                if( e instanceof Bullet ){
+                    this.quadTree.add( e, e.x - 4, e.y - 4, 8, 8 );
+                }else{
+                    this.quadTree.add( e, e.x - e.shape.width / 2, e.y - e.shape.height / 2, e.shape.width, e.shape.height );
+                }
             }
         }
 
         for( var i = 0; i < this.entities.length; i++ ){
             var e = this.entities[i];
-            var others = this.quadTree.retrieve( e );
 
-            if( e instanceof Player ){
+            if( e instanceof Player || e instanceof Enemy ){
+                var others = this.quadTree.getElemsNearby(e.x, e.y, e.shape.width, e.shape.height);
                 for( var j = 0; j < others.length; j++ ){
                     var o = others[j];
 
-                    if( o instanceof PlayerBullet || o instanceof Player ) continue;
+                    if( !(o instanceof DamageableEntity) ) continue;
+                    if( (e.maskFlags & o.categoryFlags) == 0 && (o.maskFlags & e.categoryFlags) == 0 ) continue;
 
-                    var collision = ndgmr.checkPixelCollision( e.shape, o.shape, 0.1 );
+                    var collision = ndgmr.checkPixelCollision( e.shape, o.shape, 1 );
                     if( collision ){
-                        if( o instanceof EnemyBullet ){
-                            e.damage( o.damage );
+                        if( o instanceof Bullet ){
+                            e.hit( o.damage );
                             o.setAlive( false );
+                        }else{
+                            e.hit( 5 );
+                            o.hit( 5 );
                         }
-                    }
-                }
-            }else if( e instanceof PlayerBullet ){
-                for( var j = 0; j < others.length; j++ ){
-                    var o = others[j];
-
-                    if( !(o instanceof DamageableEntity) || o instanceof PlayerBullet || o instanceof Player ) continue;
-
-                    var collision = ndgmr.checkPixelCollision( e.shape, o.shape, 0.1 );
-                    if( collision ){
-                        o.damage( e.damage );
-                        e.setAlive( false );
                     }
                 }
             }

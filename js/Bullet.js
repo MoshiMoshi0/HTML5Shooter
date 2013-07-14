@@ -12,7 +12,12 @@ var Bullet = Class.create( DamageableEntity, {
 
         this.shape.x = this.x = x;
         this.shape.y = this.y = y;
+
+        //this.shape.cache( -this.shape.width / 2, -this.shape.height / 2, this.shape.width, this.shape.height );
         this.shape.rotation = -Math.atan2( vx, vy ) * 180 / Math.PI - 90;
+
+        this.categoryFlags = CollisionFlags.BULLET;
+        this.maskFlags = CollisionFlags.ALL;
 
         this.vx = vx;
         this.vy = vy;
@@ -20,6 +25,8 @@ var Bullet = Class.create( DamageableEntity, {
     },
 
     update: function( $super, deltaTime ){
+        $super( deltaTime );
+
         this.x += this.vx;
         this.y += this.vy;
 
@@ -28,7 +35,7 @@ var Bullet = Class.create( DamageableEntity, {
     },
 
     isAlive: function( $super ){
-        return $super() && !(this.x < -20 || this.x >= this.stage.canvas.getWidth() + 20 || this.y < -20 || this.y >= this.stage.canvas.getHeight() + 20 );
+        return $super() && !(this.x < -20 || this.x >= this.stage.canvas.width + 20 || this.y < -20 || this.y >= this.stage.canvas.height + 20 );
     },
 
     destroy: function( $super ){
@@ -39,11 +46,16 @@ var Bullet = Class.create( DamageableEntity, {
 var EnemyBullet = Class.create( Bullet, {
     initialize: function( $super, world, x, y, vx, vy, damage ){
         $super( world, x, y, vx, vy, damage, "images/7-0.png" );
+
+        this.categoryFlags |= CollisionFlags.ENEMYBULLET;
+        this.maskFlags = CollisionFlags.PLAYER;
     }
 });
 
 var PlayerBullet = Class.create( Bullet, {
     initialize: function( $super, world, x, y, vx, vy, damage ){
         $super( world, x, y, vx, vy, damage, "images/7-8.png" );
+        this.categoryFlags |= CollisionFlags.PLAYERBULLET;
+        this.maskFlags = CollisionFlags.ENEMY;
     }
 });

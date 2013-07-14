@@ -36,7 +36,8 @@
         var stage;
 
         var world;
-        //var parallax;
+        var fpsLabel;
+        var parallax;
         function init(){
             canvas = document.getElementById("container");
             stage = new createjs.Stage( canvas );
@@ -47,27 +48,35 @@
             createjs.Ticker.setFPS( 60 );
             createjs.Ticker.removeListener( createjs.Tween );
 
-            Math.seedrandom( 0 );
-
             stage.context = canvas.getContext( "2d" );
             stage.autoClear = false;
             stage.width = canvas.width;
             stage.height = canvas.height;
+            stage.snapToPixelEnabled = true;
 
             stage.addEventListener("stagemousedown", function(e) { stage.mouseDown = true; });
             stage.addEventListener("stagemouseup", function(e) { stage.mouseDown = false; });
 
+            fpsLabel = new createjs.Text("-- fps", "bold 18px Arial", "#ff7700");
+            fpsLabel.x = 10;
+            fpsLabel.y = 20;
+            stage.addChild(fpsLabel);
+
+            Math.seedrandom( 0 );
+
             world = new World( stage );
-            //parallax = new Parallax( world, [ "images/ParallaxBlack.png", "images/ParallaxStars.png", "images/ParallaxStars.png"], [1, 1, 2] );
+            parallax = new Parallax( world, [ "images/ParallaxStars.png"], [1] );
         }
 
-        function tick(){
+        function tick( e ){
             var deltaTime = createjs.Ticker.getInterval() / 1000;
 
             stage.clear();
             world.update( deltaTime );
-            //parallax.update( deltaTime );
-            stage.update();
+            parallax.update( deltaTime );
+
+            fpsLabel.text = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
+            stage.update( e );
         }
     </script>
 </head>

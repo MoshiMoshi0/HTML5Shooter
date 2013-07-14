@@ -23,30 +23,17 @@ var FRICTION_R = 0.40;
 
 var Player = Class.create( DamageableEntity, {
     initialize: function( $super, world ){
-        $super( world, "images/1-0.png", 10 );
+        $super( world, "images/1-0.png", 100000 );
 
         this.stage = this.world.stage;
         this.x = this.stage.width / 2;
         this.y = this.stage.height - 50;
-        this.vx = 0;
-        this.vy = 0;
-        this.ax = 0;
-        this.ay = 0;
 
-        this.keyWPower = 0;
-        this.keyAPower = 0;
-        this.keySPower = 0;
-        this.keyDPower = 0;
-        this.shootTime = 0;
+        this.categoryFlags = CollisionFlags.PLAYER;
+        this.maskFlags = CollisionFlags.ENEMY | CollisionFlags.ENEMYBULLET;
 
-        this.shape.rotation = -90;
-
-        this.stage.canvas.addEventListener( "mousedown", function( e ){
-            var rect = canvas.getBoundingClientRect();
-            var vx = (e.x - rect.left - this.x) / 10;
-            var vy = (e.y - rect.top - this.y) / 10;
-
-        }, false );
+        this.vx = this.vy = this.ax = this.ay = 0;
+        this.keyWPower = this.keyAPower = this.keySPower = this.keyDPower = this.shootTime = 0;
     },
 
     updateKeyboard: function (deltaTime) {
@@ -96,19 +83,11 @@ var Player = Class.create( DamageableEntity, {
         this.y += this.vy * deltaTime * SPEED_MUL;
 
         if (!(ut.isKeyPressed(ut.KEY_A) || ut.isKeyPressed(ut.KEY_D))) {
-            //this.ax *= FRICTION_R;
             this.vx *= FRICTION_R;
-        } else {
-            //this.ax *= FRICTION_P;
-            //this.vx *= FRICTION_P;
         }
 
         if (!(ut.isKeyPressed(ut.KEY_W) || ut.isKeyPressed(ut.KEY_S))) {
-            //this.ay *= FRICTION_R;
             this.vy *= FRICTION_R;
-        } else {
-            //this.ay *= FRICTION_P;
-            //this.vy *= FRICTION_P;
         }
     },
 
@@ -126,11 +105,6 @@ var Player = Class.create( DamageableEntity, {
                 var bullet = new PlayerBullet(this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * 10, ny * 10, 1);
                 this.world.addEntity(bullet);
             }
-
-            /*var nx = this.stage.mouseX - this.x;
-            var ny = this.stage.mouseY - this.y;
-            var len = Math.sqrt( nx*nx + ny*ny );
-            nx /= len; ny /= len;*/
 
             this.shootTime = 0;
         }
