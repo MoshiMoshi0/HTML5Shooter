@@ -13,17 +13,25 @@ var Entity = Class.create({
         this.alive = true;
 
         this.shape = new createjs.Bitmap( bitmap );
-        this.shape.snapToPixel = true;
         this.shape.width = this.shape.image.width;
         this.shape.height = this.shape.image.height;
-
         this.shape.regX = parseInt( this.shape.width / 2 );
         this.shape.regY = parseInt( this.shape.height / 2 );
+        this.shape.snapToPixel = true;
+        this.tickTime = 0;
+        this.totalTime = 0;
+
+        //if( !(this instanceof Bullet) ){
+        //    this.shape.cache( 0, 0, this.shape.width, this.shape.height );
+        //}
 
         this.stage.addChild( this.shape );
     },
 
-    update: function( deltaTime ){},
+    update: function( deltaTime ){
+        this.totalTime += deltaTime;
+        this.tickTime++;
+    },
 
     isAlive: function(){
         return this.alive;
@@ -33,5 +41,7 @@ var Entity = Class.create({
         this.alive = f;
     },
 
-    destroy: function(){}
+    destroy: function(){
+        this.stage.removeChild( this.shape );
+    }
 });

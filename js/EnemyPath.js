@@ -11,14 +11,14 @@ var EnemyPath = Class.create({
         this.points = [ p0, p1, p2, p3 ];
         this.stage = stage;
 
-        var g = new createjs.Graphics();
-        g.setStrokeStyle(1);
-        g.beginStroke( "rgb(0,0,255)" );
-        g.moveTo( p0.x, p0.y );
-        g.bezierCurveTo( p1.x, p1.y, p2.x, p2.y, p3.x, p3.y );
+        //var g = new createjs.Graphics();
+        //g.setStrokeStyle(1);
+        //g.beginStroke( "rgb(0,0,255)" );
+        //g.moveTo( p0.x, p0.y );
+        //g.bezierCurveTo( p1.x, p1.y, p2.x, p2.y, p3.x, p3.y );
 
-        this.shape = new createjs.Shape(g);
-        this.stage.addChild( this.shape );
+        //this.shape = new createjs.Shape(g);
+        //this.stage.addChild( this.shape );
     },
 
     getPointOnPath: function( t ){
@@ -30,7 +30,7 @@ var EnemyPath = Class.create({
     },
 
     destroy: function(){
-        this.stage.removeChild( this.shape );
+        //this.stage.removeChild( this.shape );
     }
 });
 

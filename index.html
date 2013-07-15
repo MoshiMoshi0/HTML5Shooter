@@ -19,15 +19,18 @@
     <script src="js/lib/collision.js"></script>
     <script src="js/lib/quadtree.js"></script>
     <script src="js/lib/seedrandom.js"></script>
+    <script src="js/lib/particleemitter.js"></script>
     <script src="js/Parallax.js"></script>
     <script src="js/Entity.js"></script>
+    <script src="js/CollidableEntity.js"></script>
     <script src="js/DamageableEntity.js"></script>
     <script src="js/Bullet.js"></script>
-    <script src="js/World.js"></script>
     <script src="js/Player.js"></script>
+    <script src="js/Enemy.js"></script>
+    <script src="js/Item.js"></script>
+    <script src="js/World.js"></script>
     <script src="js/EnemySequence.js"></script>
     <script src="js/EnemyPath.js"></script>
-    <script src="js/Enemy.js"></script>
     <script>
         Math.clip = function(number, min, max) { return Math.max(min, Math.min(number, max)); };
         Math.mod = function( a, b ){ return ((a % b) + b) % b; };
@@ -36,7 +39,7 @@
         var stage;
 
         var world;
-        var fpsLabel;
+        var fpsLabel, debugLabel;
         var parallax;
         function init(){
             canvas = document.getElementById("container");
@@ -48,35 +51,49 @@
             createjs.Ticker.setFPS( 60 );
             createjs.Ticker.removeListener( createjs.Tween );
 
+            Math.seedrandom( 0 );
             stage.context = canvas.getContext( "2d" );
             stage.autoClear = false;
             stage.width = canvas.width;
             stage.height = canvas.height;
-            stage.snapToPixelEnabled = true;
+            //stage.snapToPixelEnabled = true;
 
             stage.addEventListener("stagemousedown", function(e) { stage.mouseDown = true; });
             stage.addEventListener("stagemouseup", function(e) { stage.mouseDown = false; });
 
-            fpsLabel = new createjs.Text("-- fps", "bold 18px Arial", "#ff7700");
-            fpsLabel.x = 10;
-            fpsLabel.y = 20;
+            fpsLabel = new createjs.Text("-", "bold 18px Arial", "#ff7700");
+            fpsLabel.x = 10; fpsLabel.y = 20;
             stage.addChild(fpsLabel);
 
-            Math.seedrandom( 0 );
+            debugLabel = new createjs.Text("-", "bold 18px Arial", "#ff7700");
+            debugLabel.x = 10; debugLabel.y = 40;
+            stage.addChild(debugLabel);
 
             world = new World( stage );
             parallax = new Parallax( world, [ "images/ParallaxStars.png"], [1] );
         }
 
-        function tick( e ){
+        function tick(){
+            stage.context.fillStyle = "#000000";
+            stage.context.fillRect(0, 0, this.stage.width, this.stage.height);
+
             var deltaTime = createjs.Ticker.getInterval() / 1000;
 
-            stage.clear();
+            var startTime = new Date().getTime();
             world.update( deltaTime );
             parallax.update( deltaTime );
+            var endTime = new Date().getTime();
+            var updateTime = endTime - startTime;
 
-            fpsLabel.text = Math.round(createjs.Ticker.getMeasuredFPS()) + " fps";
-            stage.update( e );
+            fpsLabel.text = Math.round( createjs.Ticker.getMeasuredFPS() ) + " fps";
+
+            startTime = new Date().getTime();
+            stage.update();
+            endTime = new Date().getTime();
+
+            var renderTime = endTime - startTime;
+            var tickTime = renderTime + updateTime;
+            debugLabel.text = updateTime + " U " + tickTime + " T " + renderTime + " R ";
         }
     </script>
 </head>

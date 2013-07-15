@@ -29,7 +29,7 @@ var QuadTree = function(x, y, width, height, level)
     this.nodes   = null;
     this.colors  = ['black', 'white', 'red', 'yellow', 'green'];
     
-    var MAX_SPRITES_NUM = 8;
+    var MAX_SPRITES_NUM = 6;
     var MAX_LEVELS_NUM  = 4;
     
     this.draw = function(ctx)

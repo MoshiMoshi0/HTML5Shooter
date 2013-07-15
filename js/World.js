@@ -8,22 +8,25 @@
 
 var World = Class.create({
     initialize: function( stage ){
-       this.stage = stage;
-       this.entities = [];
-       this.sequences = [];
+        this.stage = stage;
+        this.entities = [];
+        this.sequences = [];
 
-       this.totalTime = 0;
-       this.player = new Player( this );
-       this.sequenceFactory = new EnemySequenceFactory( this );
-       this.quadTree = new QuadTree( 0, 0,  this.stage.width,  this.stage.height, 0 );
+        this.totalTime = 0;
+        this.player = new Player( this );
+        this.sequenceFactory = new EnemySequenceFactory( this );
+        this.quadTree = new QuadTree( 0, 0,  this.stage.width,  this.stage.height, 0 );
+        this.particleEmitter = new ParticleEmitter( this.stage );
 
-       this.addEntity( this.player );
+        this.addEntity( this.player );
+        this.addEntity( new SpeedUpgrade( this, this.player, 100, 100, "images/1-2.png" ) );
     },
 
     update: function( deltaTime ){
         this.totalTime += deltaTime;
 
-        for( var i = this.entities.length - 1; i >= 0 ; i-- ){
+        var i = this.entities.length;
+        while( i-- ){
             var e = this.entities[i];
 
             if( !e.isAlive() ){
@@ -34,17 +37,17 @@ var World = Class.create({
             e.update( deltaTime );
         }
 
-        for( var i = this.sequences.length - 1; i >= 0; i-- ){
-            var seq = this.sequences[i];
-            seq.update( deltaTime );
+        i = this.sequences.length;
+        while( i-- ){
+            var s = this.sequences[i];
+            s.update( deltaTime );
 
-            if( seq.finished() ){
-                seq.destroy();
-                this.sequences.splice( i, 1 );
+            if( s.finished() ){
+                this.removeSequenceIndex( s, i );
             }
         }
 
-        if( this.sequences.length < this.totalTime % 5 ){
+        if( this.sequences.length < -1 ){
             this.sequences.push( this.sequenceFactory.getRandom() );
         }
 
@@ -54,9 +57,10 @@ var World = Class.create({
 
     solveCollisions: function(){
         this.quadTree.clear();
-        for( var i = 0; i < this.entities.length; i++ ){
+        var i = this.entities.length;
+        while( i-- ){
             var e = this.entities[i];
-            if( e instanceof DamageableEntity ){
+            if( e instanceof CollidableEntity ){
                 if( e instanceof Bullet ){
                     this.quadTree.add( e, e.x - 4, e.y - 4, 8, 8 );
                 }else{
@@ -65,25 +69,31 @@ var World = Class.create({
             }
         }
 
-        for( var i = 0; i < this.entities.length; i++ ){
+        i = this.entities.length;
+        while( i-- ){
             var e = this.entities[i];
-
             if( e instanceof Player || e instanceof Enemy ){
                 var others = this.quadTree.getElemsNearby(e.x, e.y, e.shape.width, e.shape.height);
-                for( var j = 0; j < others.length; j++ ){
+                var j = others.length;
+                while( j-- ){
                     var o = others[j];
 
-                    if( !(o instanceof DamageableEntity) ) continue;
+                    if( !(o instanceof CollidableEntity) ) continue;
                     if( (e.maskFlags & o.categoryFlags) == 0 && (o.maskFlags & e.categoryFlags) == 0 ) continue;
 
-                    var collision = ndgmr.checkPixelCollision( e.shape, o.shape, 1 );
+                    var collision = ndgmr.checkRectCollision( e.shape, o.shape );
                     if( collision ){
+                        e.onHit( o );
                         if( o instanceof Bullet ){
-                            e.hit( o.damage );
+                            if( e instanceof DamageableEntity ){
+                                e.hit( o.damage );
+                            }
                             o.setAlive( false );
+
+                            this.particleEmitter.emitMultiple( {x: e.x, y: e.y}, 30, ParticleEmitter.DEFAULT_PROPS, [ParticleEmitter.DEFAULT_PARTICLE]);
                         }else{
-                            e.hit( 5 );
-                            o.hit( 5 );
+                            //e.hit( 5 );
+                            //o.hit( 5 );
                         }
                     }
                 }
@@ -102,6 +112,15 @@ var World = Class.create({
     removeEntityIndex: function( e, i ){
         e.destroy();
         this.entities.splice( i, 1 );
+    },
+
+    removeSequence: function( s ){
+        this.removeSequenceIndex( e, this.sequences.indexOf(s) );
+    },
+
+    removeSequenceIndex: function( s, i ){
+        s.destroy();
+        this.sequences.splice( i, 1 );
     },
 
     addSequence: function( path, tweenInfo, count, delay, types ){

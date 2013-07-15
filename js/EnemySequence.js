@@ -31,6 +31,7 @@ var EnemySequence = Class.create({
                 this.canRelease = true;
             }
         }
+
         if( this.canRelease ){
             this.releaseEnemy();
             this.canRelease = false;
@@ -39,23 +40,16 @@ var EnemySequence = Class.create({
     },
 
     finished: function(){
-        var allDone = true;
-        var allDead = true;
+        //return this.count == 0;
 
         for( var i = 0; i < this.enemies.length; i++ ){
             var enemy = this.enemies[i];
             if( enemy.isAlive() ){
-                allDead = false;
+                return false;
             }
-
-            if( this.count != 0 || enemy.tween.target.value < 1 ){
-                allDone = false;
-            }
-
-            if( !allDone && !allDead ) return false;
         }
 
-        return allDone || allDead;
+        return true;
     },
 
     destroy: function(){
@@ -64,6 +58,8 @@ var EnemySequence = Class.create({
         for( var i = 0; i < this.enemies.length; i++ ){
             this.enemies[i].setAlive( false );
         }
+
+        this.enemies.splice( 0, this.enemies.length );
     },
 
     releaseEnemy: function(){
@@ -94,7 +90,7 @@ EnemySequenceFactory = Class.create({
             end = (Math.round( Math.random() * 2 ) + 1) | (1 << 2);
         }else if( start == 3 ){
             end = 1 | (1 << 2);
-        }else{}
+        }
 
         if( end == -1 ) return null;
 
@@ -104,8 +100,8 @@ EnemySequenceFactory = Class.create({
         var path = new EnemyPath( this.stage, startPoint, control0, control1, endPoint );
         var tweenInfo = {duration: Math.random() * 10000 + 5000, ease: createjs.Ease.linear };
 
-        var delay = Math.random() * 500 + 200;
         var types = [];
+        var delay = Math.random() * 500 + 200;
         var count = Math.round( Math.random() * 5 + 1);
         for( var i = 0; i < count; i++ ){
             var x = Math.random();
