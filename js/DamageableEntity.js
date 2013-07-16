@@ -9,14 +9,18 @@
 var DamageableEntity = Class.create( CollidableEntity, {
     initialize: function( $super, world, bitmap, hp ){
         $super( world, bitmap );
-        this.hp = hp;
+
+        this.stats = {
+            hp: hp,
+            maxHp: hp
+        };
     },
 
     hit: function( damage ){
-        this.hp -= damage;
+        this.stats.hp = Math.clip( this.stats.hp - damage, 0, this.stats.maxHp );
     },
 
     isAlive: function( $super ){
-        return $super() && this.hp > 0;
+        return $super() && this.stats.hp > 0;
     }
 });

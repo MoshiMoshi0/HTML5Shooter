@@ -15,6 +15,7 @@ var EnemySequence = Class.create({
         this.delay = delay;
         this.types = types;
 
+        this.totalTime = 0;
         this.enemies = [];
         this.stage = this.world.stage;
         this.canRelease = true;
@@ -22,6 +23,9 @@ var EnemySequence = Class.create({
     },
 
     update: function( deltaTime ){
+        this.totalTime += deltaTime;
+
+        if( this.totalTime > this.tweenInfo.duration * 2 / 1000 ) this.destroy();
         if( this.count <= 0 ) return;
 
         if( !this.canRelease ){
@@ -103,17 +107,28 @@ EnemySequenceFactory = Class.create({
         var types = [];
         var delay = Math.random() * 500 + 200;
         var count = Math.round( Math.random() * 5 + 1);
-        for( var i = 0; i < count; i++ ){
-            var x = Math.random();
 
-            if( x < 0.05 ){
-                types.push( SpecialEnemy );
-            }else if( x < 0.2 ){
-                types.push( BigEnemy );
-            }else if( x < 1 ){
-                types.push( SmallEnemy );
+        var sequencePower;
+        var maxPower = this.world.player.stats.getPowerLevel();
+        var enemyScale = Math.clip( maxPower / 200, 0, 1 );
+        do {
+            types.clear();
+            sequencePower = 0;
+            while( types.length < count ){
+                var x = Math.random();
+
+                if( maxPower > 40 && x < 0.05 +  + 0.2 * enemyScale ){
+                    types.push( SpecialEnemy );
+                    sequencePower += 40;
+                }else if( maxPower > 20 && x < 0.2 + 0.4 * enemyScale  ){
+                    types.push( BigEnemy );
+                    sequencePower += 20;
+                }else if( maxPower > 1 && x < 1 - enemyScale * 0.8 ){
+                    types.push( SmallEnemy );
+                    sequencePower += 1;
+                }
             }
-        }
+        } while( sequencePower > maxPower );
 
         return new EnemySequence( this.world, path, tweenInfo, count, delay, types );
     },

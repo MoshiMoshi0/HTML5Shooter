@@ -16,10 +16,18 @@ var Enemy = Class.create( DamageableEntity, {
         this.categoryFlags = CollisionFlags.ENEMY;
         this.maskFlags = CollisionFlags.PLAYER | CollisionFlags.PLAYERBULLET;
 
+        this.dropRate = 0;
         this.tweenSpeed = 1;
         var point = this.path.getPointOnPath( this.tween.target.value );
         this.shape.x = this.x = point.x;
         this.shape.y = this.y = point.y;
+        this.shape.rotation = -90;
+
+        this.stats = {
+            hp: hp, maxHp: hp,
+            bulletSpeed: 0,
+            bulletFirerate: 0
+        }
     },
 
     isAlive: function( $super ){
@@ -35,25 +43,38 @@ var Enemy = Class.create( DamageableEntity, {
         this.shape.y = this.y = point.y;
 
         this.tween.tick( deltaTime * this.tweenSpeed * 1000 );
-        this.shape.rotation = -Math.atan2( this.world.player.x - this.x, this.world.player.y - this.y ) * 180 / Math.PI - 90;
+        //this.shape.rotation = -Math.atan2( this.world.player.x - this.x, this.world.player.y - this.y ) * 180 / Math.PI - 90;
+    },
+
+    destroy: function( $super ){
+        if( Math.random() < this.dropRate ){
+            var ctor = Item.getRandom();
+            var item = new ctor( this.world, this.x, this.y );
+            this.world.addEntity( item );
+        }
+        $super();
     }
 });
 
 var SmallEnemy = Class.create( Enemy, {
     initialize: function( $super, world, path, tween ){
         $super( world, path, tween, "images/6-1.png", 1 );
+        this.dropRate = 0.1;
     }
 });
 
 var BigEnemy = Class.create( Enemy, {
     initialize: function( $super, world, path, tween ){
         $super( world, path, tween, "images/0-0.png", 4 );
+        this.dropRate = 0.3;
+        this.stats.bulletSpeed = Math.clip( (this.world.player.getPowerLevel() / 20) + 3, 3, 7.5);
+        this.stats.fireRate = 14 - Math.clip( (this.world.player.getPowerLevel() / 40), 0, 6);
     },
 
     update: function( $super, deltaTime ){
         $super( deltaTime );
 
-        if( this.tickTime % 14 == 0 ){
+        if( this.tickTime % this.stats.fireRate == 0 ){
             var nx = this.world.player.x - this.x + Math.random();
             var ny = this.world.player.y - this.y + Math.random();
             var len = Math.sqrt( nx*nx + ny*ny );
@@ -68,6 +89,9 @@ var BigEnemy = Class.create( Enemy, {
 var SpecialEnemy = Class.create( Enemy, {
     initialize: function( $super, world, path, tween ){
         $super( world, path, tween, "images/0-2.png", 10 );
+        this.stats.bulletSpeed = Math.clip( (this.world.player.getPowerLevel() / 40) + 2, 2, 5.5);
+        this.stats.fireRate = 6 - Math.clip( (this.world.player.getPowerLevel() / 80), 0, 2);
+        this.dropRate = 0.8;
         this.tweenSpeed = 0.8;
         this.rot = 0;
     },
@@ -75,7 +99,7 @@ var SpecialEnemy = Class.create( Enemy, {
     update: function( $super, deltaTime ){
         $super( deltaTime );
 
-        if( this.tickTime % 6 == 0 ){
+        if( this.tickTime % this.stats.fireRate == 0 ){
             var nx = Math.cos( this.rot * Math.PI / 180 );
             var ny = Math.sin( this.rot * Math.PI / 180 );
             this.rot += 10;

@@ -6,14 +6,14 @@
  * To change this template use File | Settings | File Templates.
  */
 
-var Bullet = Class.create( DamageableEntity, {
+var Bullet = Class.create( CollidableEntity, {
     initialize: function( $super, world, x, y, vx, vy, damage, bitmap ){
-        $super( world, bitmap, 1 );
+        $super( world, bitmap );
 
         this.shape.x = this.x = x;
         this.shape.y = this.y = y;
 
-        this.shape.rotation = -Math.atan2( vx, vy ) * 180 / Math.PI - 90;
+        //this.shape.rotation = -Math.atan2( vx, vy ) * 180 / Math.PI - 90;
 
         this.categoryFlags = CollisionFlags.BULLET;
         this.maskFlags = CollisionFlags.ALL;
@@ -35,7 +35,9 @@ var Bullet = Class.create( DamageableEntity, {
 
     isAlive: function( $super ){
         return $super() && !(this.x < -20 || this.x >= this.stage.canvas.width + 20 || this.y < -20 || this.y >= this.stage.canvas.height + 20 );
-    }
+    },
+
+    onKill: function( e ){}
 });
 
 var EnemyBullet = Class.create( Bullet, {
@@ -53,5 +55,18 @@ var PlayerBullet = Class.create( Bullet, {
 
         this.categoryFlags |= CollisionFlags.PLAYERBULLET;
         this.maskFlags = CollisionFlags.ENEMY;
+        this.player = this.world.player;
+    },
+
+    onHit: function( e ){
+        if( e instanceof SmallEnemy ) this.player.stats.score += 1;
+        else if( e instanceof BigEnemy ) this.player.stats.score += 2;
+        else if( e instanceof SpecialEnemy ) this.player.stats.score += 3;
+    },
+
+    onKill: function( e ){
+        if( e instanceof SmallEnemy ) this.player.stats.score += 10;
+        else if( e instanceof BigEnemy ) this.player.stats.score += 200;
+        else if( e instanceof SpecialEnemy ) this.player.stats.score += 1000;
     }
 });

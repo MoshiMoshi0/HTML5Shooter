@@ -19,7 +19,6 @@ var World = Class.create({
         this.particleEmitter = new ParticleEmitter( this.stage );
 
         this.addEntity( this.player );
-        this.addEntity( new SpeedUpgrade( this, this.player, 100, 100, "images/1-2.png" ) );
     },
 
     update: function( deltaTime ){
@@ -47,7 +46,7 @@ var World = Class.create({
             }
         }
 
-        if( this.sequences.length < -1 ){
+        if( this.sequences.length < 3 ){
             this.sequences.push( this.sequenceFactory.getRandom() );
         }
 
@@ -81,12 +80,17 @@ var World = Class.create({
                     if( !(o instanceof CollidableEntity) ) continue;
                     if( (e.maskFlags & o.categoryFlags) == 0 && (o.maskFlags & e.categoryFlags) == 0 ) continue;
 
-                    var collision = ndgmr.checkRectCollision( e.shape, o.shape );
+                    var collision = false;
+                    /*if( e instanceof Player )   collision = ndgmr.checkPixelCollision( e.shape, o.shape, 1 );
+                    else */                       collision = ndgmr.checkRectCollision( e.shape, o.shape );
                     if( collision ){
-                        e.onHit( o );
+                        o.onHit( e ); e.onHit( o );
                         if( o instanceof Bullet ){
                             if( e instanceof DamageableEntity ){
-                                e.hit( o.damage );
+                                if(e.stats.hp > 0 ) {
+                                    e.hit( o.damage );
+                                    if( e.stats.hp == 0 ) o.onKill( e );
+                                }
                             }
                             o.setAlive( false );
 
