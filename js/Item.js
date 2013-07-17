@@ -25,7 +25,7 @@ var Item = Class.create( CollidableEntity, {
         var scale = Math.sin( this.tickTime * 0.1 ) * 0.2 + 1;
         this.shape.y = this.y += 2;
         this.shape.scaleX = this.shape.scaleY = scale;
-        this.shape.rotation = 20 * Math.sin( this.tickTime * 0.1 );
+        this.shape.rotation = 15 * Math.cos( this.tickTime * 0.05 );
     },
 
     isAlive: function( $super ){
@@ -61,7 +61,7 @@ var BulletSpreadUpgrade = Class.create( Item, {
     onHit: function( $super, e ){ e.stats.upgradeBulletSpread(); $super();  }
 });
 
-var HealUgrade = Class.create( Item, {
+var HealthUgrade = Class.create( Item, {
     initialize: function( $super, world, x, y ){ $super( world, x, y, "images/4-7.png" ); },
     onHit: function( $super, e ){ e.stats.upgradeHp(); e.hp = e.stats.maxHp; $super(); }
 });
@@ -71,4 +71,4 @@ var ScoreItem = Class.create( Item, {
     onHit: function( $super, e ){ e.stats.score += 2500; $super(); }
 });
 
-var _items = [ BulletSpeedUpgrade, BulletCountUpgrade, BulletFirerateUpgrade, HealUgrade,HealUgrade, ScoreItem,ScoreItem,ScoreItem,ScoreItem ];
+var _items = [ BulletSpeedUpgrade, BulletCountUpgrade, BulletFirerateUpgrade, HealthUgrade, BulletSpreadUpgrade, ScoreItem,ScoreItem,ScoreItem ];

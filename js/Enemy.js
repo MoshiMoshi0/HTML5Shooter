@@ -59,16 +59,20 @@ var Enemy = Class.create( DamageableEntity, {
 var SmallEnemy = Class.create( Enemy, {
     initialize: function( $super, world, path, tween ){
         $super( world, path, tween, "images/6-1.png", 1 );
-        this.dropRate = 0.1;
+
+        var power = this.world.player.stats.getPowerLevel();
+        this.dropRate = 0.5 - Math.clip( power / 30, 0, 1 ) * 0.4;
     }
 });
 
 var BigEnemy = Class.create( Enemy, {
     initialize: function( $super, world, path, tween ){
         $super( world, path, tween, "images/0-0.png", 4 );
-        this.dropRate = 0.3;
-        this.stats.bulletSpeed = Math.clip( (this.world.player.getPowerLevel() / 20) + 3, 3, 7.5);
-        this.stats.fireRate = 14 - Math.clip( (this.world.player.getPowerLevel() / 40), 0, 6);
+
+        var power = this.world.player.stats.getPowerLevel();
+        this.stats.bulletSpeed = Math.clip( (power / 30), 3, 8);
+        this.stats.fireRate = 30 - Math.round( Math.clip( (power - 20) / 8, 0, 20) );
+        this.dropRate = 0.3 - Math.clip( power / 300, 0, 1 ) * 0.3;
     },
 
     update: function( $super, deltaTime ){
@@ -80,7 +84,7 @@ var BigEnemy = Class.create( Enemy, {
             var len = Math.sqrt( nx*nx + ny*ny );
             nx /= len; ny /= len;
 
-            var bullet = new EnemyBullet( this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * 3, ny * 3, 3 );
+            var bullet = new EnemyBullet( this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * this.stats.bulletSpeed, ny * this.stats.bulletSpeed, 3 );
             this.world.addEntity( bullet );
         }
     }
@@ -89,9 +93,11 @@ var BigEnemy = Class.create( Enemy, {
 var SpecialEnemy = Class.create( Enemy, {
     initialize: function( $super, world, path, tween ){
         $super( world, path, tween, "images/0-2.png", 10 );
-        this.stats.bulletSpeed = Math.clip( (this.world.player.getPowerLevel() / 40) + 2, 2, 5.5);
-        this.stats.fireRate = 6 - Math.clip( (this.world.player.getPowerLevel() / 80), 0, 2);
-        this.dropRate = 0.8;
+
+        var power = this.world.player.stats.getPowerLevel();
+        this.stats.bulletSpeed = Math.clip( (power / 40), 2, 5);
+        this.stats.fireRate = 8 - Math.round( Math.clip( power / 80, 0, 2) );
+        this.dropRate = 0.8 - Math.clip( power / 300, 0, 1 ) * 0.8;
         this.tweenSpeed = 0.8;
         this.rot = 0;
     },
@@ -104,7 +110,7 @@ var SpecialEnemy = Class.create( Enemy, {
             var ny = Math.sin( this.rot * Math.PI / 180 );
             this.rot += 10;
 
-            var bullet = new EnemyBullet( this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * 2, ny * 2, 1 );
+            var bullet = new EnemyBullet( this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * this.stats.bulletSpeed, ny * this.stats.bulletSpeed, 1 );
             this.world.addEntity( bullet );
         }
     }

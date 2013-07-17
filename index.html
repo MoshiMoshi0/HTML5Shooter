@@ -56,7 +56,7 @@
             stage.autoClear = false;
             stage.width = canvas.width;
             stage.height = canvas.height;
-            //stage.snapToPixelEnabled = true;
+            stage.snapToPixelEnabled = true;
 
             stage.addEventListener("stagemousedown", function(e) { stage.mouseDown = true; });
             stage.addEventListener("stagemouseup", function(e) { stage.mouseDown = false; });
@@ -99,7 +99,7 @@
 
             var renderTime = endTime - startTime;
             var tickTime = renderTime + updateTime;
-            debugLabel.text = updateTime + " U " + tickTime + " T " + renderTime + " R ";
+            debugLabel.text = " U " + updateTime + " R " + renderTime + " T " + tickTime + " E " + this.world.entities.length + " C " + this.world.collisions;
             playerLabel.text = player.stats.toString();
         }
     </script>

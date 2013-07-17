@@ -117,12 +117,12 @@ EnemySequenceFactory = Class.create({
             while( types.length < count ){
                 var x = Math.random();
 
-                if( maxPower > 40 && x < 0.05 +  + 0.2 * enemyScale ){
+                if( maxPower > 40 && x < 0.05 + 0.2 * enemyScale ){
                     types.push( SpecialEnemy );
                     sequencePower += 40;
-                }else if( maxPower > 20 && x < 0.2 + 0.4 * enemyScale  ){
+                }else if( maxPower > 15 && x < 0.2 + 0.4 * enemyScale ){
                     types.push( BigEnemy );
-                    sequencePower += 20;
+                    sequencePower += 15;
                 }else if( maxPower > 1 && x < 1 - enemyScale * 0.8 ){
                     types.push( SmallEnemy );
                     sequencePower += 1;

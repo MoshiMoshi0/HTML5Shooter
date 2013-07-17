@@ -50,11 +50,17 @@ var World = Class.create({
             this.sequences.push( this.sequenceFactory.getRandom() );
         }
 
+        if( ut.isKeyPressed( ut.KEY_0 ) ){
+            var ctor = Item.getRandom();
+            this.addEntity( new ctor( this, this.stage.mouseX, this.stage.mouseY ) );
+        }
+
         this.solveCollisions();
         //this.quadTree.draw( this.stage.context );
     },
 
     solveCollisions: function(){
+        this.collisions = 0;
         this.quadTree.clear();
         var i = this.entities.length;
         while( i-- ){
@@ -84,6 +90,7 @@ var World = Class.create({
                     /*if( e instanceof Player )   collision = ndgmr.checkPixelCollision( e.shape, o.shape, 1 );
                     else */                       collision = ndgmr.checkRectCollision( e.shape, o.shape );
                     if( collision ){
+                        this.collisions++;
                         o.onHit( e ); e.onHit( o );
                         if( o instanceof Bullet ){
                             if( e instanceof DamageableEntity ){

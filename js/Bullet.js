@@ -70,3 +70,37 @@ var PlayerBullet = Class.create( Bullet, {
         else if( e instanceof SpecialEnemy ) this.player.stats.score += 1000;
     }
 });
+
+var GuidedBullet = Class.create( Bullet, {
+    initialize: function( $super, world, x, y, target ){
+        var vx = Math.cos( Math.random() * 2 * Math.PI ) * 13;
+        var vy = Math.sin( Math.random() * 2 * Math.PI ) * 13;
+
+        $super( world, x, y, vx, vy, 1, "images/7-8.png" );
+        this.categoryFlags |= CollisionFlags.PLAYERBULLET;
+        this.maskFlags = CollisionFlags.ENEMY;
+        this.target = target;
+    },
+
+    update: function( $super, deltaTime){
+        $super( deltaTime );
+
+        if( this.target != null && this.target.isAlive() ){
+            var ax = this.target.x - this.x;
+            var ay = this.target.y - this.y;
+            var len = Math.sqrt( ax*ax + ay+ay );
+            ax *= 6 / len; ay *= 6 / len;
+
+            this.vx += ax;
+            this.vy += ay;
+        }
+
+        len = Math.sqrt( this.vx*this.vx + this.vy*this.vy );
+        this.vx *= 13 / len;
+        this.vy *= 13 / len;
+    },
+
+    isAlive: function( $super ){
+        return $super() && this.target.isAlive();
+    }
+});

@@ -21,9 +21,7 @@ var Entity = Class.create({
         this.tickTime = 0;
         this.totalTime = 0;
 
-        //if( !(this instanceof Bullet) ){
-        //    this.shape.cache( 0, 0, this.shape.width, this.shape.height );
-        //}
+        //this.shape.cache( 0, 0, this.shape.width, this.shape.height );
 
         this.stage.addChild( this.shape );
     },

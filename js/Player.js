@@ -50,10 +50,10 @@ var Player = Class.create( DamageableEntity, {
             },
 
             getMaxHpForLevel: function( l ){ return Math.sqrt( l ) * 10; },
-            getBulletCountForLevel: function( l ){ return l; },
+            getBulletCountForLevel: function( l ){ return Math.round( Math.pow( Math.log(l), 2 ) ) / 2 + 1; },
             getBulletSpeedForLevel: function( l ){ return Math.log( l ) * 2 + 3; },
-            getBulletSpreadForLevel: function( l ){ return 10 / l; },
-            getBulletFirerateForLevel: function( l ){ return Math.clip( 0.5 - (l - 1) * 0.02, 0.1, 10 ); },
+            getBulletSpreadForLevel: function( l ){ return (Math.log( l ) + 1) * 10; },
+            getBulletFirerateForLevel: function( l ){ return Math.clip( 0.5 - (l - 1) * 0.02 + this.bulletCount * 0.01, 0.2, 1 ); },
 
             upgradeHp: function(){ this.hp = this.maxHp = this.getMaxHpForLevel( ++this.hpUpgrade ); },
             upgradeBulletCount: function(){ this.bulletCount = this.getBulletCountForLevel( ++this.countUpgrade ); },
@@ -75,7 +75,7 @@ var Player = Class.create( DamageableEntity, {
             getPowerLevel: function(){
                 var hpPower = this.maxHp / this.getMaxHpForLevel( 1 ) * 2;
 
-                var countPower = this.bulletCount;
+                var countPower = this.bulletCount / this.getBulletCountForLevel( 1 );
                 var speedPower = this.bulletSpeed / this.getBulletSpeedForLevel( 1 ) * 5;
                 var spreadPower = this.bulletSpread / this.getBulletSpreadForLevel( 1 ) * 3;
                 var fireratePower = this.bulletFirerate / this.getBulletFirerateForLevel( 1 ) * 8;
@@ -87,6 +87,8 @@ var Player = Class.create( DamageableEntity, {
         };
 
         this.stats.init();
+        this.usingSpecial = false;
+        this.specialTime = 0;
     },
 
     updateKeyboard: function (deltaTime) {
@@ -114,14 +116,9 @@ var Player = Class.create( DamageableEntity, {
         if (!(ut.isKeyPressed(ut.KEY_A) || ut.isKeyPressed(ut.KEY_D))) this.vx *= DAMPING;
         if (!(ut.isKeyPressed(ut.KEY_W) || ut.isKeyPressed(ut.KEY_S))) this.vy *= DAMPING;
 
-        if( ut.isKeyPressed( ut.KEY_T ) ) this.stats.bulletCount++;
-        if( ut.isKeyPressed( ut.KEY_G ) ) this.stats.bulletCount--;
-
-        if( ut.isKeyPressed( ut.KEY_Y ) ) this.stats.bulletSpread += 0.1;
-        if( ut.isKeyPressed( ut.KEY_H ) ) this.stats.bulletSpread -= 0.1;
-
-        if( ut.isKeyPressed( ut.KEY_U ) ) this.stats.bulletSpeed += 0.1;
-        if( ut.isKeyPressed( ut.KEY_J ) ) this.stats.bulletSpeed -= 0.1;
+        if( ut.isKeyPressed( ut.KEY_1 ) && !this.usingSpecial ){
+            this.usingSpecial = true;
+        }
     },
 
     updateMouse: function ( deltaTime ) {
@@ -146,8 +143,30 @@ var Player = Class.create( DamageableEntity, {
     },
 
     update: function( $super, deltaTime ){
+        $super( deltaTime );
         this.updateMouse( deltaTime );
-        this.updateKeyboard( deltaTime );
+        this.updateKeyboard( deltaTime )
+
+        if( this.usingSpecial ){
+            if( this.specialTime < 4 ){
+                this.specialTime += deltaTime;
+
+                if( this.tickTime % 2 == 0 ){
+                    var target;
+                    var tries = 0;
+
+                    do {
+                        target = this.world.entities[ Math.round(Math.random() * (this.world.entities.length - 1)) ];
+                    }while( !(target instanceof Enemy) && tries < 10 );
+
+                    if( !(target instanceof Enemy) ) target = null;
+                    this.world.addEntity( new GuidedBullet( this.world, this.x, this.y, target) );
+                }
+            }else{
+                this.usingSpecial = false;
+                this.specialTime = 0;
+            }
+        }
 
         this.x = Math.clip( this.x, this.shape.width / 2, this.stage.width - this.shape.width / 2 );
         this.y = Math.clip( this.y, this.shape.height / 2, this.stage.height - this.shape.height / 2 );
