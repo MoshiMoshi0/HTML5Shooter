@@ -6,19 +6,14 @@
  * To change this template use File | Settings | File Templates.
  */
 
-var KEY_STEP = 0.05;
-var X_ACCEL_STEP = 0.75;
-var Y_ACCEL_STEP = 0.75;
+var KEY_STEP = 1;
+var X_ACCEL_STEP = 60;
+var Y_ACCEL_STEP = 60;
 
-var MAX_X_ACCEL = 2;
-var MAX_Y_ACCEL = 1;
-var MAX_X_SPEED = 1.5;
-var MAX_Y_SPEED = 1;
+var MAX_X_SPEED = 500;
+var MAX_Y_SPEED = 500;
 
-var ACCEL_MUL = 80;
-var SPEED_MUL = 300;
-
-var DAMPING = 0.40;
+var DAMPING = 0.70;
 
 var Player = Class.create( DamageableEntity, {
     initialize: function( $super, world ){
@@ -29,9 +24,9 @@ var Player = Class.create( DamageableEntity, {
         this.shape.y = this.y = this.stage.height - 50;
 
         this.categoryFlags = CollisionFlags.PLAYER;
-        this.maskFlags = CollisionFlags.ENEMY | CollisionFlags.ENEMYBULLET | CollisionFlags.ITEM;
+        this.maskFlags = CollisionFlags.ENEMYBULLET | CollisionFlags.ITEM;
+//CollisionFlags.ENEMY |
 
-        this.vx = this.vy = this.ax = this.ay = 0;
         this.keyWPower = this.keyAPower = this.keySPower = this.keyDPower = this.shootTime = 0;
         this.stats = {
             hpUpgrade: 0, hp: 0, maxHp: 0,
@@ -51,8 +46,8 @@ var Player = Class.create( DamageableEntity, {
 
             getMaxHpForLevel: function( l ){ return Math.sqrt( l ) * 10; },
             getBulletCountForLevel: function( l ){ return Math.round( Math.pow( Math.log(l), 2 ) ) / 2 + 1; },
-            getBulletSpeedForLevel: function( l ){ return Math.log( l ) * 2 + 3; },
-            getBulletSpreadForLevel: function( l ){ return (Math.log( l ) + 1) * 10; },
+            getBulletSpeedForLevel: function( l ){ return (Math.log( l ) * 2 + 3) * 60; },
+            getBulletSpreadForLevel: function( l ){ return (Math.log( l ) + 1) * 5 + 5; },
             getBulletFirerateForLevel: function( l ){ return Math.clip( 0.5 - (l - 1) * 0.02 + this.bulletCount * 0.01, 0.2, 1 ); },
 
             upgradeHp: function(){ this.hp = this.maxHp = this.getMaxHpForLevel( ++this.hpUpgrade ); },
@@ -97,21 +92,16 @@ var Player = Class.create( DamageableEntity, {
         this.keySPower = Math.clip( (this.keySPower + KEY_STEP) * ut.isKeyPressed( ut.KEY_S ), 0, 1);
         this.keyDPower = Math.clip( (this.keyDPower + KEY_STEP) * ut.isKeyPressed( ut.KEY_D ), 0, 1);
 
-        this.ax += this.keyDPower * X_ACCEL_STEP;
-        this.ax -= this.keyAPower * X_ACCEL_STEP;
-        this.ay -= this.keyWPower * Y_ACCEL_STEP;
-        this.ay += this.keySPower * Y_ACCEL_STEP;
+        this.vx += this.keyDPower * X_ACCEL_STEP;
+        this.vx -= this.keyAPower * X_ACCEL_STEP;
+        this.vy -= this.keyWPower * Y_ACCEL_STEP;
+        this.vy += this.keySPower * Y_ACCEL_STEP;
 
-        this.ax = Math.clip(this.ax, -MAX_X_ACCEL, MAX_X_ACCEL);
-        this.ay = Math.clip(this.ay, -MAX_Y_ACCEL, MAX_Y_ACCEL);
-
-        this.vx += this.ax * deltaTime * ACCEL_MUL;
-        this.vy += this.ay * deltaTime * ACCEL_MUL;
         this.vx = Math.clip(this.vx, -MAX_X_SPEED, MAX_X_SPEED);
         this.vy = Math.clip(this.vy, -MAX_Y_SPEED, MAX_Y_SPEED);
 
-        this.shape.x = this.x += this.vx * deltaTime * SPEED_MUL;
-        this.shape.y = this.y += this.vy * deltaTime * SPEED_MUL;
+        this.shape.x = this.x += this.vx * deltaTime;
+        this.shape.y = this.y += this.vy * deltaTime;
 
         if (!(ut.isKeyPressed(ut.KEY_A) || ut.isKeyPressed(ut.KEY_D))) this.vx *= DAMPING;
         if (!(ut.isKeyPressed(ut.KEY_W) || ut.isKeyPressed(ut.KEY_S))) this.vy *= DAMPING;
@@ -157,10 +147,11 @@ var Player = Class.create( DamageableEntity, {
 
                     do {
                         target = this.world.entities[ Math.round(Math.random() * (this.world.entities.length - 1)) ];
-                    }while( !(target instanceof Enemy) && tries < 10 );
+                    }while( !(target instanceof Enemy) && tries++ < 30 );
 
-                    if( !(target instanceof Enemy) ) target = null;
-                    this.world.addEntity( new GuidedBullet( this.world, this.x, this.y, target) );
+                    if( target instanceof Enemy ){
+                        this.world.addEntity( new GuidedBullet( this.world, this.x, this.y, target) );
+                    }
                 }
             }else{
                 this.usingSpecial = false;
@@ -170,6 +161,5 @@ var Player = Class.create( DamageableEntity, {
 
         this.x = Math.clip( this.x, this.shape.width / 2, this.stage.width - this.shape.width / 2 );
         this.y = Math.clip( this.y, this.shape.height / 2, this.stage.height - this.shape.height / 2 );
-        this.ax = this.ay = 0;
     }
 });

@@ -20,8 +20,7 @@ var Entity = Class.create({
         this.shape.snapToPixel = true;
         this.tickTime = 0;
         this.totalTime = 0;
-
-        //this.shape.cache( 0, 0, this.shape.width, this.shape.height );
+        this.vx = this.vy = 0;
 
         this.stage.addChild( this.shape );
     },

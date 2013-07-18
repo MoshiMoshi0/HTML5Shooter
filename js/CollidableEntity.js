@@ -28,7 +28,96 @@ var CollidableEntity = Class.create( Entity, {
 
         this.categoryFlags = CollisionFlags.ALL;
         this.maskFlags = CollisionFlags.ALL;
+
+        this.obb = {
+            x: 0, y: 0,
+            ex: 0, ey: 0,
+            w: 0, h: 0,
+            n0x: 0, n0y: 0,  n1x: 0, n1y: 0,
+            v0x: 0, v0y: 0, v1x: 0, v1y: 0,
+            v2x: 0, v2y: 0, v3x: 0, v3y: 0,
+
+            initialize: function( x, y, angle, ex, ey ){
+                this.ex = ex; this.ey = ey;
+                this.w = 2*ex; this.h = 2*ey;
+                this.set( x, y, angle );
+            },
+
+            set: function( x, y, angle ){
+                this.x = x; this.y = y;
+                this.angle = angle % 360;
+                var r0 = this.angle * Math.PI / 180;
+                this.n0x = Math.cos( r0 ); this.n0y = Math.sin( r0 );
+                this.n1x = -this.n0y; this.n1y = this.n0x;
+
+                this.v0x = x - this.n0x * this.ex - this.n1x * this.ey;
+                this.v1x = x + this.n0x * this.ex - this.n1x * this.ey;
+                this.v2x = x + this.n0x * this.ex + this.n1x * this.ey;
+                this.v3x = x - this.n0x * this.ex + this.n1x * this.ey;
+
+                this.v0y = y - this.n0y * this.ex - this.n1y * this.ey;
+                this.v1y = y + this.n0y * this.ex - this.n1y * this.ey;
+                this.v2y = y + this.n0y * this.ex + this.n1y * this.ey;
+                this.v3y = y - this.n0y * this.ex + this.n1y * this.ey;
+            }
+        };
+
+        this.aabb = {
+            x: 0, y: 0,
+            w: 0, h: 0,
+            ex: 0, ey: 0,
+            v0x: 0, v0y: 0, v1x: 0, v1y: 0,
+            v2x: 0, v2y: 0, v3x: 0, v3y: 0,
+            //initialize: function( x, y, ex, ey ){
+            //    this.set( x, y, ex, ey );
+            //},
+
+            update: function( x, y ){
+                this.x = x; this.y = y;
+
+                this.v0x = x - this.ex;
+                this.v1x = x + this.ex;
+                this.v2x = x + this.ex;
+                this.v3x = x - this.ex;
+
+                this.v0y = y - this.ey;
+                this.v1y = y + this.ey;
+                this.v2y = y + this.ey;
+                this.v3y = y - this.ey;
+            },
+
+            set: function( x, y, ex, ey ){
+                this.ex = ex; this.ey = ey;
+                this.w = 2*ex; this.h = 2*ey;
+                this.update( x, y );
+            }
+        };
+
+        this.obbs = {};
     },
 
-    onHit: function( e ){}
+    update: function( $super, deltaTime ){
+        $super( deltaTime );
+
+        var ox = this.vx * deltaTime * 2;
+        var oy = this.vy * deltaTime * 2;
+
+        var ow = Math.abs( ox ) / 2;
+        var oh = Math.abs( oy ) / 2;
+
+        this.obb.set( this.x, this.y, this.shape.rotation );
+        this.aabb.set( this.x + ox, this.y + oy, this.shape.width / 2 + ow, this.shape.height / 2 + oh );
+
+        this.stage.removeChild( this.obbs );
+        this.obbs = new createjs.Shape();
+        this.obbs.graphics.beginStroke("#ff0000").moveTo( this.obb.v0x, this.obb.v0y).lineTo( this.obb.v1x, this.obb.v1y).lineTo(this.obb.v2x, this.obb.v2y).lineTo(this.obb.v3x, this.obb.v3y).lineTo(this.obb.v0x, this.obb.v0y);
+        this.stage.addChild( this.obbs );
+    },
+
+    onHit: function( e ){},
+
+    destroy: function( $super ){
+        $super();
+        this.stage.removeChild( this.obbs );
+    }
 });

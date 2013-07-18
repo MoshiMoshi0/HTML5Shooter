@@ -55,30 +55,26 @@ var World = Class.create({
             this.addEntity( new ctor( this, this.stage.mouseX, this.stage.mouseY ) );
         }
 
-        this.solveCollisions();
+        this.solveCollisions( deltaTime );
         //this.quadTree.draw( this.stage.context );
     },
 
-    solveCollisions: function(){
+    solveCollisions: function( deltaTime ){
         this.collisions = 0;
         this.quadTree.clear();
         var i = this.entities.length;
         while( i-- ){
             var e = this.entities[i];
             if( e instanceof CollidableEntity ){
-                if( e instanceof Bullet ){
-                    this.quadTree.add( e, e.x - 4, e.y - 4, 8, 8 );
-                }else{
-                    this.quadTree.add( e, e.x - e.shape.width / 2, e.y - e.shape.height / 2, e.shape.width, e.shape.height );
-                }
+                this.quadTree.add( e, e.aabb.v0x, e.aabb.v0y, e.aabb.w, e.aabb.h );
             }
         }
 
-        i = this.entities.length;
+        i = 0;//this.entities.length;
         while( i-- ){
             var e = this.entities[i];
             if( e instanceof Player || e instanceof Enemy ){
-                var others = this.quadTree.getElemsNearby(e.x, e.y, e.shape.width, e.shape.height);
+                var others = this.quadTree.getElemsNearby( e.aabb.v0x, e.aabb.v0y, e.aabb.w, e.aabb.h );
                 var j = others.length;
                 while( j-- ){
                     var o = others[j];
@@ -86,9 +82,9 @@ var World = Class.create({
                     if( !(o instanceof CollidableEntity) ) continue;
                     if( (e.maskFlags & o.categoryFlags) == 0 && (o.maskFlags & e.categoryFlags) == 0 ) continue;
 
-                    var collision = false;
-                    /*if( e instanceof Player )   collision = ndgmr.checkPixelCollision( e.shape, o.shape, 1 );
-                    else */                       collision = ndgmr.checkRectCollision( e.shape, o.shape );
+                    var collision = SAT.checkCollision( e, o, deltaTime );
+                    //if( e instanceof Player )   collision = ndgmr.checkPixelCollision( e.shape, o.shape, 1 );
+                    //else                        collision = ndgmr.checkRectCollision( e.shape, o.shape );
                     if( collision ){
                         this.collisions++;
                         o.onHit( e ); e.onHit( o );

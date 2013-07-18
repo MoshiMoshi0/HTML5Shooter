@@ -21,6 +21,7 @@
     <script src="js/lib/seedrandom.js"></script>
     <script src="js/lib/particleemitter.js"></script>
     <script src="js/Parallax.js"></script>
+    <script src="js/SAT.js"></script>
     <script src="js/Entity.js"></script>
     <script src="js/CollidableEntity.js"></script>
     <script src="js/DamageableEntity.js"></script>
@@ -40,7 +41,7 @@
 
         var world;
         var fpsLabel, debugLabel, playerLabel;
-        var parallax;
+        //var parallax;
         function init(){
             canvas = document.getElementById("container");
             stage = new createjs.Stage( canvas );
@@ -74,20 +75,20 @@
             stage.addChild(playerLabel);
 
             world = new World( stage );
-            parallax = new Parallax( world, [ "images/ParallaxStars.png"], [1] );
+            //parallax = new Parallax( world, [ "images/ParallaxStars.png"], [1] );
 
             player = world.player;
         }
 
         function tick(){
-            stage.context.fillStyle = "#000000";
+            stage.context.fillStyle = "#FFFFFF";
             stage.context.fillRect(0, 0, this.stage.width, this.stage.height);
 
             var deltaTime = createjs.Ticker.getInterval() / 1000;
 
             var startTime = new Date().getTime();
             world.update( deltaTime );
-            parallax.update( deltaTime );
+            //parallax.update( deltaTime );
             var endTime = new Date().getTime();
             var updateTime = endTime - startTime;
 

@@ -14,8 +14,8 @@ var Enemy = Class.create( DamageableEntity, {
         this.path = path;
 
         this.categoryFlags = CollisionFlags.ENEMY;
-        this.maskFlags = CollisionFlags.PLAYER | CollisionFlags.PLAYERBULLET;
-
+        this.maskFlags = CollisionFlags.PLAYERBULLET;
+//CollisionFlags.PLAYER |
         this.dropRate = 0;
         this.tweenSpeed = 1;
         var point = this.path.getPointOnPath( this.tween.target.value );
@@ -27,7 +27,7 @@ var Enemy = Class.create( DamageableEntity, {
             hp: hp, maxHp: hp,
             bulletSpeed: 0,
             bulletFirerate: 0
-        }
+        };
     },
 
     isAlive: function( $super ){
@@ -70,7 +70,7 @@ var BigEnemy = Class.create( Enemy, {
         $super( world, path, tween, "images/0-0.png", 4 );
 
         var power = this.world.player.stats.getPowerLevel();
-        this.stats.bulletSpeed = Math.clip( (power / 30), 3, 8);
+        this.stats.bulletSpeed = Math.clip( (power / 30), 3, 8) * 60;
         this.stats.fireRate = 30 - Math.round( Math.clip( (power - 20) / 8, 0, 20) );
         this.dropRate = 0.3 - Math.clip( power / 300, 0, 1 ) * 0.3;
     },
@@ -95,7 +95,7 @@ var SpecialEnemy = Class.create( Enemy, {
         $super( world, path, tween, "images/0-2.png", 10 );
 
         var power = this.world.player.stats.getPowerLevel();
-        this.stats.bulletSpeed = Math.clip( (power / 40), 2, 5);
+        this.stats.bulletSpeed = Math.clip( (power / 40), 2, 5) * 60;
         this.stats.fireRate = 8 - Math.round( Math.clip( power / 80, 0, 2) );
         this.dropRate = 0.8 - Math.clip( power / 300, 0, 1 ) * 0.8;
         this.tweenSpeed = 0.8;

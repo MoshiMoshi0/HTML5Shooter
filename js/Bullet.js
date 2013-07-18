@@ -26,8 +26,8 @@ var Bullet = Class.create( CollidableEntity, {
     update: function( $super, deltaTime ){
         $super( deltaTime );
 
-        this.x += this.vx;
-        this.y += this.vy;
+        this.x += this.vx * deltaTime;
+        this.y += this.vy * deltaTime;
 
         this.shape.x = this.x;
         this.shape.y = this.y;
@@ -73,10 +73,10 @@ var PlayerBullet = Class.create( Bullet, {
 
 var GuidedBullet = Class.create( Bullet, {
     initialize: function( $super, world, x, y, target ){
-        var vx = Math.cos( Math.random() * 2 * Math.PI ) * 13;
-        var vy = Math.sin( Math.random() * 2 * Math.PI ) * 13;
+        var tvx = Math.cos( Math.random() * 2 * Math.PI ) * 13;
+        var tvy = Math.sin( Math.random() * 2 * Math.PI ) * 13;
 
-        $super( world, x, y, vx, vy, 1, "images/7-8.png" );
+        $super( world, x, y, tvx, tvy, 1, "images/7-8.png" );
         this.categoryFlags |= CollisionFlags.PLAYERBULLET;
         this.maskFlags = CollisionFlags.ENEMY;
         this.target = target;
@@ -96,8 +96,8 @@ var GuidedBullet = Class.create( Bullet, {
         }
 
         len = Math.sqrt( this.vx*this.vx + this.vy*this.vy );
-        this.vx *= 13 / len;
-        this.vy *= 13 / len;
+        this.vx *= 13 * 60 / len;
+        this.vy *= 13 * 60 / len;
     },
 
     isAlive: function( $super ){
