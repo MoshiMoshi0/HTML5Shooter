@@ -23,9 +23,9 @@ var Player = Class.create( DamageableEntity, {
         this.shape.x = this.x = this.stage.width / 2;
         this.shape.y = this.y = this.stage.height - 50;
 
+        this.obb.init( this.x, this.y, this.shape.rotation, 12, 12 );
         this.categoryFlags = CollisionFlags.PLAYER;
-        this.maskFlags = CollisionFlags.ENEMYBULLET | CollisionFlags.ITEM;
-//CollisionFlags.ENEMY |
+        this.maskFlags = CollisionFlags.ENEMY | CollisionFlags.ENEMYBULLET | CollisionFlags.ITEM;
 
         this.keyWPower = this.keyAPower = this.keySPower = this.keyDPower = this.shootTime = 0;
         this.stats = {

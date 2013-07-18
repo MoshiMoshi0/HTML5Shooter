@@ -70,7 +70,7 @@ var World = Class.create({
             }
         }
 
-        i = 0;//this.entities.length;
+        i = this.entities.length;
         while( i-- ){
             var e = this.entities[i];
             if( e instanceof Player || e instanceof Enemy ){

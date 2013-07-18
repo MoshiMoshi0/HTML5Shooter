@@ -14,59 +14,55 @@ SAT.checkCollision = function( e0, e1, deltaTime ){
     var b0 = e0.obb;
     var b1 = e1.obb;
 
-    var tt0 = SAT.checkAxis( e0, e1, b0.n0x, b0.n0y, vx, vy );
-    var tt1 = SAT.checkAxis( e0, e1, b0.n1x, b0.n1y, vx, vy );
-    var tt2 = SAT.checkAxis( e0, e1, b1.n0x, b1.n0y, vx, vy );
-    var tt3 = SAT.checkAxis( e0, e1, b1.n1x, b1.n1y, vx, vy );
+    var t0 = 0, t1 = Number.MAX_VALUE;
+    var axes = [ b0.n0x, b0.n0y, b0.n1x, b0.n1y, b1.n0x, b1.n0y, b1.n1x, b1.n1y ];
+    for( var i = 0; i < 4; i++ ){
+        var ax = axes[ i * 2 + 0 ];
+        var ay = axes[ i * 2 + 1 ];
 
-    var t0 = Math.min( tt0.t0, Math.min( tt1.t0, Math.min( tt2.t0, tt3.t0 )));
-    var t1 = Math.max( tt0.t1, Math.max( tt1.t1, Math.max( tt2.t1, tt3.t1 )));
+        var speed = this.dot( vx, vy, ax, ay );
 
-    if(!( t0 < 0 || t0 > 1 || t1 < 0 | t1 > 1 ) && ( t0 <= t1 ))
-    alert( t0 + " " + t1 );
-    return !( t0 < 0 || t0 > 1 || t1 < 0 | t1 > 1 ) && ( t0 <= t1 );
+        var i0 = this.getInterval( b0, ax, ay );
+        var i1 = this.getInterval( b1, ax, ay );
+
+        var vpr = (i1.min - i0.max) / speed;
+        var vpl = (i1.max - i0.min) / speed;
+        if( i0.max < i1.min ) {
+            if( speed <= 0 ) return false;
+
+            t0 = Math.max(vpr, t0);
+            t1 = Math.min(vpl, t1);
+        } else if( i1.max < i0.min ) {
+            if (speed >= 0 ) return false;
+
+            t0 = Math.max(vpl, t0);
+            t1 = Math.min(vpr, t1);
+        } else if( speed > 0 ) {
+            t1 = Math.min(vpl, t1);
+        } else if( speed < 0 ) {
+            t1 = Math.min(vpr, t1);
+        }
+
+        if( t0 > 1 ) return false;
+        if( t0 > t1 ) return false;
+    }
+
+    return true;
 };
 
 SAT.dot = function( x0, y0, x1, y1 ){ return x0 * x1 + y0 * y1; };
 SAT.getInterval = function( o, ax, ay ){
-    var d0 = this.dot( o.n0x, o.n0y, ax, ay ) * o.ex;
-    var d1 = this.dot( o.n1x, o.n1y, ax, ay ) * o.ey;
-    var c = this.dot( o.x, o.y, ax, ay ); var r = d0 + d1;
-    return  { min: c - r, max: c + r };
-};
+    var dot = this.dot(o.v0x, o.v0y, ax, ay);
+    var ret = { min: dot, max: dot };
 
-SAT.checkAxis = function( e0, e1, ax, ay, vx, vy ){
-    var speed = this.dot( vx, vy, ax, ay );
+    dot = this.dot(o.v1x, o.v1y, ax, ay);
+    ret.min = Math.min( ret.min, dot); ret.max = Math.max( ret.max, dot );
 
-    var i0 = this.getInterval( e0.obb, ax, ay );
-    var i1 = this.getInterval( e1.obb, ax, ay );
+    dot = this.dot(o.v2x, o.v2y, ax, ay);
+    ret.min = Math.min( ret.min, dot); ret.max = Math.max( ret.max, dot );
 
-    var t;
-    var t0 = 0, t1 = Number.MAX_VALUE;
-    if( i0.max < i1.min ){
-        if( speed <= 0 ) return { t0: t0, t1: t1 };
+    dot = this.dot(o.v3x, o.v3y, ax, ay);
+    ret.min = Math.min( ret.min, dot); ret.max = Math.max( ret.max, dot );
 
-        t = (i1.min - i0.max) / speed;
-        t0 = Math.max(t, t0);
-
-        t = (i1.max - i0.min) / speed;
-        t1 = Math.max(t, t1);
-    }else  if( i1.max < i0.min ) {
-        if (speed >= 0 ) return { t0: t0, t1: t1 };
-
-        t = (i1.max - i0.min) / speed;
-        t0 = Math.max(t, t0);
-
-        t = (i1.min - i0.max) / speed;
-        t1 = Math.min(t, t1);
-    } else {
-        if( speed > 0 ){
-            t = (i1.max - i0.min) / speed;
-        }else if ( speed < 0 ){
-            t = (i1.min - i0.max) / speed;
-        }
-        t1 = Math.min(t, t1);
-    }
-
-    return { t0: t0, t1: t1 };
+    return ret;
 };

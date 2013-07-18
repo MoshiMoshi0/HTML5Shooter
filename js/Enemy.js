@@ -13,15 +13,16 @@ var Enemy = Class.create( DamageableEntity, {
         this.tween = tween;
         this.path = path;
 
-        this.categoryFlags = CollisionFlags.ENEMY;
-        this.maskFlags = CollisionFlags.PLAYERBULLET;
-//CollisionFlags.PLAYER |
         this.dropRate = 0;
         this.tweenSpeed = 1;
         var point = this.path.getPointOnPath( this.tween.target.value );
         this.shape.x = this.x = point.x;
         this.shape.y = this.y = point.y;
         this.shape.rotation = -90;
+
+        this.obb.init( this.x, this.y, this.shape.rotation, 12, 12 );
+        this.categoryFlags = CollisionFlags.ENEMY;
+        this.maskFlags = CollisionFlags.PLAYER |CollisionFlags.PLAYERBULLET;
 
         this.stats = {
             hp: hp, maxHp: hp,
