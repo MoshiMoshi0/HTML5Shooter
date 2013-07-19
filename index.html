@@ -16,12 +16,10 @@
     <script src="http://code.createjs.com/createjs-2013.05.14.min.js"></script>
     <script src="js/lib/input.js"></script>
     <script src="js/lib/prototype.js"></script>
-    <script src="js/lib/collision.js"></script>
     <script src="js/lib/quadtree.js"></script>
     <script src="js/lib/seedrandom.js"></script>
     <script src="js/lib/particleemitter.js"></script>
-    <script src="js/Parallax.js"></script>
-    <script src="js/SAT.js"></script>
+
     <script src="js/Entity.js"></script>
     <script src="js/CollidableEntity.js"></script>
     <script src="js/DamageableEntity.js"></script>
@@ -29,7 +27,10 @@
     <script src="js/Player.js"></script>
     <script src="js/Enemy.js"></script>
     <script src="js/Item.js"></script>
+
     <script src="js/World.js"></script>
+    <script src="js/Parallax.js"></script>
+    <script src="js/SAT.js"></script>
     <script src="js/EnemySequence.js"></script>
     <script src="js/EnemyPath.js"></script>
     <script>
@@ -41,9 +42,9 @@
 
         var world;
         var fpsLabel, debugLabel, playerLabel;
-        //var parallax;
+        var parallax;
         function init(){
-            canvas = document.getElementById("container");
+            canvas = document.getElementById("canvas_container");
             stage = new createjs.Stage( canvas );
 
             ut.initInput();
@@ -75,20 +76,20 @@
             stage.addChild(playerLabel);
 
             world = new World( stage );
-            //parallax = new Parallax( world, [ "images/ParallaxStars.png"], [1] );
+            parallax = new Parallax( world, [ "images/ParallaxStars.png"], [1] );
 
             player = world.player;
         }
 
         function tick(){
-            stage.context.fillStyle = "#FFFFFF";
+            stage.context.fillStyle = "#000000";
             stage.context.fillRect(0, 0, this.stage.width, this.stage.height);
 
             var deltaTime = createjs.Ticker.getInterval() / 1000;
 
             var startTime = new Date().getTime();
             world.update( deltaTime );
-            //parallax.update( deltaTime );
+            parallax.update( deltaTime );
             var endTime = new Date().getTime();
             var updateTime = endTime - startTime;
 
@@ -106,6 +107,6 @@
     </script>
 </head>
 <body onload="init()">
-    <canvas id="container" width="1280" height="720"></canvas>
+    <canvas id="canvas_container" width="800" height="600"></canvas>
 </body>
 </html>

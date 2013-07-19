@@ -47,7 +47,7 @@ var World = Class.create({
         }
 
         if( this.sequences.length < 3 ){
-            this.sequences.push( this.sequenceFactory.getRandom() );
+            this.addSequence( this.sequenceFactory.getRandom() );
         }
 
         if( ut.isKeyPressed( ut.KEY_0 ) ){
@@ -83,8 +83,6 @@ var World = Class.create({
                     if( (e.maskFlags & o.categoryFlags) == 0 && (o.maskFlags & e.categoryFlags) == 0 ) continue;
 
                     var collision = SAT.checkCollision( e, o, deltaTime );
-                    //if( e instanceof Player )   collision = ndgmr.checkPixelCollision( e.shape, o.shape, 1 );
-                    //else                        collision = ndgmr.checkRectCollision( e.shape, o.shape );
                     if( collision ){
                         this.collisions++;
                         o.onHit( e ); e.onHit( o );
@@ -97,7 +95,7 @@ var World = Class.create({
                             }
                             o.setAlive( false );
 
-                            this.particleEmitter.emitMultiple( {x: e.x, y: e.y}, 30, ParticleEmitter.DEFAULT_PROPS, [ParticleEmitter.DEFAULT_PARTICLE]);
+                            this.particleEmitter.emitMultiple( {x: e.x, y: e.y}, 30, ParticleEmitter.DEFAULT_PROPS, [ParticleEmitter.DEFAULT_PARTICLE] );
                         }else{
                             //e.hit( 5 );
                             //o.hit( 5 );
@@ -130,7 +128,7 @@ var World = Class.create({
         this.sequences.splice( i, 1 );
     },
 
-    addSequence: function( path, tweenInfo, count, delay, types ){
-        this.sequences.push( new EnemySequence( this, path, tweenInfo, count, delay, types ) );
+    addSequence: function( s ){
+        this.sequences.push( s );
     }
 });

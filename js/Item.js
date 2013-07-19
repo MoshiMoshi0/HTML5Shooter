@@ -15,6 +15,9 @@ var Item = Class.create( CollidableEntity, {
         this.shape.x = this.x = x;
         this.shape.y = this.y = y;
         this.stage = this.world.stage;
+
+        this.obb.init( x, y, this.shape.rotation, 16, 16 );
+        this.aabb.init( x, y, 16, 16 );
         this.categoryFlags = CollisionFlags.ITEM;
         this.maskFlags = CollisionFlags.PLAYER;
     },

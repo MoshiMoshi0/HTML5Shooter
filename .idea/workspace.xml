@@ -4,13 +4,13 @@
     <list default="true" id="d6588619-7782-44eb-a174-b74a0df38106" name="Default" comment="" />
     <ignored path="HTML5Canvas.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/index.html" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1374142340431" ignored="false" />
+    <file path="/index.html" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1374227734592" ignored="false" />
     <file path="/Enemy.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1374175508940" ignored="false" />
-    <file path="/World.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1374173466278" ignored="false" />
+    <file path="/World.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1374222966929" ignored="false" />
     <file path="/EnemySequence.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1373976612807" ignored="false" />
     <file path="/EnemyPath.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1373455588286" ignored="false" />
     <file path="/Player.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1374181983357" ignored="false" />
-    <file path="/Bullet.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1374142771122" ignored="false" />
+    <file path="/Bullet.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1374235125675" ignored="false" />
     <file path="/Entity.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1374144818857" ignored="false" />
     <file path="/Collision.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1373489633925" ignored="false" />
     <file path="/fragment.js2" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1373551077120" ignored="false" />
@@ -18,8 +18,8 @@
     <file path="/collision.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1373562626068" ignored="false" />
     <file path="/DamageableEntity.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1373972237806" ignored="false" />
     <file path="/particleemitter.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1373878098408" ignored="false" />
-    <file path="/Item.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1374059884014" ignored="false" />
-    <file path="/CollidableEntity.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1374181947264" ignored="false" />
+    <file path="/Item.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1374222138447" ignored="false" />
+    <file path="/CollidableEntity.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1374222181292" ignored="false" />
     <file path="/SAT.js" changelist="d6588619-7782-44eb-a174-b74a0df38106" time="1374183911449" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -39,7 +39,35 @@
     <favorites_list name="HTML5Canvas" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="World.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/World.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="49" column="17" selection-start="1280" selection-end="1280" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Bullet.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/Bullet.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="106" column="3" selection-start="3321" selection-end="3321" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="64" column="0" selection-start="2274" selection-end="2274" vertical-scroll-proportion="0.5311751">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -55,25 +83,25 @@
         <option value="$PROJECT_DIR$/js/EnemyPath.js" />
         <option value="$PROJECT_DIR$/js/DamageableEntity.js" />
         <option value="$PROJECT_DIR$/js/EnemySequence.js" />
-        <option value="$PROJECT_DIR$/js/Item.js" />
         <option value="code.createjs.com/createjs-2013.05.14.min.js" />
         <option value="$PROJECT_DIR$/js/Entity.js" />
-        <option value="$PROJECT_DIR$/index.html" />
-        <option value="$PROJECT_DIR$/js/Player.js" />
-        <option value="$PROJECT_DIR$/js/Bullet.js" />
         <option value="$PROJECT_DIR$/js/Enemy.js" />
-        <option value="$PROJECT_DIR$/js/World.js" />
-        <option value="$PROJECT_DIR$/js/CollidableEntity.js" />
         <option value="$PROJECT_DIR$/js/SAT.js" />
+        <option value="$PROJECT_DIR$/js/Item.js" />
+        <option value="$PROJECT_DIR$/js/CollidableEntity.js" />
+        <option value="$PROJECT_DIR$/js/Player.js" />
+        <option value="$PROJECT_DIR$/js/World.js" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/js/Bullet.js" />
       </list>
     </option>
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1056" />
+    <option name="x" value="-9" />
+    <option name="y" value="-9" />
+    <option name="width" value="1938" />
+    <option name="height" value="1050" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -132,6 +160,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -184,19 +213,18 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="options.lastSelected" value="JavaScript.Libraries" />
     <property name="recentsLimit" value="5" />
-    <property name="options.lastSelected" value="editor" />
     <property name="restartRequiresConfirmation" value="true" />
     <property name="FullScreen" value="false" />
     <property name="DefaultHtmlFileTemplate" value="Html5" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RunManager" selected="JavaScript Debug.index.html">
     <configuration default="true" type="DartUnitRunConfigurationType" factoryName="DartUnit">
@@ -261,13 +289,13 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="false" />
+    <frame x="-9" y="-9" width="1938" height="1050" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16394307" sideWeight="0.67155755" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16394307" sideWeight="0.67155755" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39841986" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32731378" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
@@ -348,9 +376,7 @@
   <component name="editorHistoryManager">
     <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavascriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/EcmaScript.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="554" column="0" selection-start="8610" selection-end="8610" vertical-scroll-proportion="0.33255813">
-          <folding />
-        </state>
+        <state line="554" column="0" selection-start="8610" selection-end="8610" vertical-scroll-proportion="0.33255813" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/EnemySequence.js">
@@ -391,34 +417,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/DamageableEntity.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="4" selection-start="393" selection-end="393" vertical-scroll-proportion="0.34971428">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/Bullet.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="21" selection-start="482" selection-end="482" vertical-scroll-proportion="0.019428572">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="15" vertical-scroll-proportion="-0.30035335">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/Player.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="21" selection-start="596" selection-end="600" vertical-scroll-proportion="0.184">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/Enemy.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="22" column="66" selection-start="679" selection-end="679" vertical-scroll-proportion="0.0">
@@ -433,16 +431,51 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/DamageableEntity.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="4" selection-start="393" selection-end="393" vertical-scroll-proportion="0.35581395">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/CollidableEntity.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="112" column="8" selection-start="3043" selection-end="3043" vertical-scroll-proportion="0.7923434">
+        <state line="42" column="10" selection-start="939" selection-end="939" vertical-scroll-proportion="0.09681228">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/Item.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="34" selection-start="563" selection-end="563" vertical-scroll-proportion="0.37558138">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/Player.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="115" column="12" selection-start="5281" selection-end="5281" vertical-scroll-proportion="0.019767443">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/World.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="10" selection-start="1577" selection-end="1577" vertical-scroll-proportion="0.68">
+        <state line="49" column="17" selection-start="1280" selection-end="1280" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/Bullet.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="106" column="3" selection-start="3321" selection-end="3321" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="64" column="0" selection-start="2274" selection-end="2274" vertical-scroll-proportion="0.5311751">
           <folding />
         </state>
       </provider>

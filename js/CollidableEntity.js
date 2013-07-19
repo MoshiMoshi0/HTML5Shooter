@@ -39,6 +39,8 @@ var OBB = Class.create({
 
     set: function( x, y, angle ){
         this.x = x; this.y = y;
+
+        //if( this.angle == angle ) return;
         this.angle = angle % 360;
         var r0 = this.angle * Math.PI / 180;
         this.n0x = Math.cos( r0 ); this.n0y = Math.sin( r0 );
@@ -79,9 +81,9 @@ var AABB = Class.create({
         this.v3x = x - this.ex;
 
         this.v0y = y - this.ey;
-        this.v1y = y + this.ey;
+        this.v1y = y - this.ey;
         this.v2y = y + this.ey;
-        this.v3y = y - this.ey;
+        this.v3y = y + this.ey;
     }
 });
 
@@ -110,16 +112,16 @@ var CollidableEntity = Class.create( Entity, {
         this.obb.set( this.x, this.y, this.shape.rotation );
         this.aabb.set( this.x + ox, this.y + oy, this.shape.width / 2 + ow, this.shape.height / 2 + oh );
 
-        this.stage.removeChild( this.obbs );
-        this.obbs = new createjs.Shape();
-        this.obbs.graphics.beginStroke("#000000").moveTo( this.obb.v0x, this.obb.v0y).lineTo( this.obb.v1x, this.obb.v1y).lineTo(this.obb.v2x, this.obb.v2y).lineTo(this.obb.v3x, this.obb.v3y).lineTo(this.obb.v0x, this.obb.v0y);
-        this.stage.addChild( this.obbs );
+        /*this.stage.removeChild( this.obbs );
+        this.obbs = new createjs.Shape()
+        this.obbs.graphics.beginStroke("#000000").moveTo( this.aabb.v0x, this.aabb.v0y).lineTo( this.aabb.v1x, this.aabb.v1y).lineTo(this.aabb.v2x, this.aabb.v2y).lineTo(this.aabb.v3x, this.aabb.v3y).lineTo(this.aabb.v0x, this.aabb.v0y);
+        this.stage.addChild( this.obbs );*/
     },
 
     onHit: function( e ){},
 
     destroy: function( $super ){
         $super();
-        this.stage.removeChild( this.obbs );
+        //this.stage.removeChild( this.obbs );
     }
 });

@@ -147,7 +147,7 @@ var Player = Class.create( DamageableEntity, {
 
                     do {
                         target = this.world.entities[ Math.round(Math.random() * (this.world.entities.length - 1)) ];
-                    }while( !(target instanceof Enemy) && tries++ < 30 );
+                    }while( !(target instanceof Enemy) && tries++ < 300 );
 
                     if( target instanceof Enemy ){
                         this.world.addEntity( new GuidedBullet( this.world, this.x, this.y, target) );
