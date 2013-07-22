@@ -62,6 +62,7 @@ var World = Class.create({
     solveCollisions: function( deltaTime ){
         this.collisions = 0;
         this.quadTree.clear();
+
         var i = this.entities.length;
         while( i-- ){
             var e = this.entities[i];
@@ -79,7 +80,8 @@ var World = Class.create({
                 while( j-- ){
                     var o = others[j];
 
-                    if( !(o instanceof CollidableEntity) ) continue;
+                    if( o === e ) continue;
+                    if( !(o instanceof CollidableEntity) || o instanceof Player ) continue;
                     if( (e.maskFlags & o.categoryFlags) == 0 && (o.maskFlags & e.categoryFlags) == 0 ) continue;
 
                     var collision = SAT.checkCollision( e, o, deltaTime );
@@ -96,9 +98,12 @@ var World = Class.create({
                             o.setAlive( false );
 
                             this.particleEmitter.emitMultiple( {x: e.x, y: e.y}, 30, ParticleEmitter.DEFAULT_PROPS, [ParticleEmitter.DEFAULT_PARTICLE] );
-                        }else{
-                            //e.hit( 5 );
-                            //o.hit( 5 );
+                        }else if( o instanceof DamageableEntity ){
+                            var hpe = e.stats.hp;
+                            var hpo = o.stats.hp;
+
+                            e.hit( hpo );
+                            o.hit( hpe );
                         }
                     }
                 }

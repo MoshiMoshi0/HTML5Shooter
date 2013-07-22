@@ -37,6 +37,7 @@ var Item = Class.create( CollidableEntity, {
 
     onHit: function( e ){
         this.setAlive( false );
+        createjs.Sound.play("powerup");
     }
 });
 

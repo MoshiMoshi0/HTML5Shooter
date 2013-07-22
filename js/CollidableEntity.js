@@ -97,7 +97,7 @@ var CollidableEntity = Class.create( Entity, {
         this.obb = new OBB();
         this.aabb = new AABB();
 
-        this.obbs = {};
+        //this.obbs = {};
     },
 
     update: function( $super, deltaTime ){

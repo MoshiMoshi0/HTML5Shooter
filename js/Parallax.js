@@ -54,8 +54,7 @@ var Parallax = Class.create({
 
                     xx += dx;
                     yy = startY;
-                    doneX = xx >= this.stage.width;
-                    doneY = false;
+                    doneY = doneX = xx >= this.stage.width;
                 }while( !doneX );
             }
         }

@@ -13,7 +13,7 @@ var Bullet = Class.create( CollidableEntity, {
         this.shape.x = this.x = x;
         this.shape.y = this.y = y;
 
-        //this.shape.rotation = -Math.atan2( vx, vy ) * 180 / Math.PI - 90;
+        this.shape.rotation = -Math.atan2( vx, vy ) * 180 / Math.PI - 90;
 
         this.obb.init( this.x, this.y, this.shape.rotation, 3, 1 );
         this.categoryFlags = CollisionFlags.BULLET;

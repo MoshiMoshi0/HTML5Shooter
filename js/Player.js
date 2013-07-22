@@ -82,8 +82,6 @@ var Player = Class.create( DamageableEntity, {
         };
 
         this.stats.init();
-        this.usingSpecial = false;
-        this.specialTime = 0;
     },
 
     updateKeyboard: function (deltaTime) {
@@ -105,29 +103,27 @@ var Player = Class.create( DamageableEntity, {
 
         if (!(ut.isKeyPressed(ut.KEY_A) || ut.isKeyPressed(ut.KEY_D))) this.vx *= DAMPING;
         if (!(ut.isKeyPressed(ut.KEY_W) || ut.isKeyPressed(ut.KEY_S))) this.vy *= DAMPING;
-
-        if( ut.isKeyPressed( ut.KEY_1 ) && !this.usingSpecial ){
-            this.usingSpecial = true;
-        }
     },
 
     updateMouse: function ( deltaTime ) {
         this.shootTime += deltaTime;
         this.shape.rotation = -Math.atan2(this.stage.mouseX - this.x, this.stage.mouseY - this.y) * 180 / Math.PI + 90;
 
-        if( this.stage.mouseDown && this.shootTime >= this.stats.bulletFirerate ){
+        if( this.shootTime >= this.stats.bulletFirerate ){
             var count = this.stats.bulletCount;
-            var halfCount = count / 2;
             var spread = this.stats.bulletSpread / count;
+
             for( var i = 0; i < count; i++ ){
-                var offset =  count == 1 ? 0 : ( 2 * (i / ( count - 1 )) - 1) * halfCount;
+                var offset =  count == 1 ? 0 : ( 2 * (i / ( count - 1 )) - 1) * ( count / 2 );
                 var angle = this.shape.rotation + offset * spread;
                 var nx = Math.cos( angle * Math.PI / 180 );
                 var ny = Math.sin( angle * Math.PI / 180 );
 
                 this.world.addEntity( new PlayerBullet(this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * this.stats.bulletSpeed, ny * this.stats.bulletSpeed, 1) );
+
             }
 
+            createjs.Sound.play("playerShoot");
             this.shootTime = 0;
         }
     },
@@ -136,28 +132,6 @@ var Player = Class.create( DamageableEntity, {
         $super( deltaTime );
         this.updateMouse( deltaTime );
         this.updateKeyboard( deltaTime )
-
-        if( this.usingSpecial ){
-            if( this.specialTime < 4 ){
-                this.specialTime += deltaTime;
-
-                if( this.tickTime % 2 == 0 ){
-                    var target;
-                    var tries = 0;
-
-                    do {
-                        target = this.world.entities[ Math.round(Math.random() * (this.world.entities.length - 1)) ];
-                    }while( !(target instanceof Enemy) && tries++ < 300 );
-
-                    if( target instanceof Enemy ){
-                        this.world.addEntity( new GuidedBullet( this.world, this.x, this.y, target) );
-                    }
-                }
-            }else{
-                this.usingSpecial = false;
-                this.specialTime = 0;
-            }
-        }
 
         this.x = Math.clip( this.x, this.shape.width / 2, this.stage.width - this.shape.width / 2 );
         this.y = Math.clip( this.y, this.shape.height / 2, this.stage.height - this.shape.height / 2 );

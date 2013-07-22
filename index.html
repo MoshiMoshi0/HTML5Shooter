@@ -14,11 +14,11 @@
         }
     </style>
     <script src="http://code.createjs.com/createjs-2013.05.14.min.js"></script>
-    <script src="js/lib/input.js"></script>
+    <script src="js/lib/particleemitter.js"></script>
+    <script src="js/lib/seedrandom.js"></script>
     <script src="js/lib/prototype.js"></script>
     <script src="js/lib/quadtree.js"></script>
-    <script src="js/lib/seedrandom.js"></script>
-    <script src="js/lib/particleemitter.js"></script>
+    <script src="js/lib/input.js"></script>
 
     <script src="js/Entity.js"></script>
     <script src="js/CollidableEntity.js"></script>
@@ -28,11 +28,11 @@
     <script src="js/Enemy.js"></script>
     <script src="js/Item.js"></script>
 
-    <script src="js/World.js"></script>
-    <script src="js/Parallax.js"></script>
-    <script src="js/SAT.js"></script>
     <script src="js/EnemySequence.js"></script>
     <script src="js/EnemyPath.js"></script>
+    <script src="js/Parallax.js"></script>
+    <script src="js/World.js"></script>
+    <script src="js/SAT.js"></script>
     <script>
         Math.clip = function(number, min, max) { return Math.max(min, Math.min(number, max)); };
         Math.mod = function( a, b ){ return ((a % b) + b) % b; };
@@ -41,13 +41,20 @@
         var stage;
 
         var world;
-        var fpsLabel, debugLabel, playerLabel;
+        var fpsLabel, playerLabel;
         var parallax;
         function init(){
             canvas = document.getElementById("canvas_container");
             stage = new createjs.Stage( canvas );
 
             ut.initInput();
+
+            createjs.Sound.registerSound("audio/shoot.mp3|audio/shoot.ogg|audio/shoot.wav", "enemyShoot", 3);
+            createjs.Sound.registerSound("audio/shoot.mp3|audio/shoot.ogg|audio/shoot.wav", "playerShoot", 5);
+            createjs.Sound.registerSound("audio/hit.mp3|audio/hit.ogg|audio/hit.wav", "hit", 50);
+            createjs.Sound.registerSound("audio/explosion.mp3|audio/explosion.ogg|audio/explosion.wav", "explosion", 10);
+            createjs.Sound.registerSound("audio/powerup.mp3|audio/powerup.ogg|audio/powerup.wav", "powerup", 5);
+
             createjs.Ticker.addListener(window, false);
             createjs.Ticker.useRAF = true;
             createjs.Ticker.setFPS( 60 );
@@ -58,7 +65,6 @@
             stage.autoClear = false;
             stage.width = canvas.width;
             stage.height = canvas.height;
-            stage.snapToPixelEnabled = true;
 
             stage.addEventListener("stagemousedown", function(e) { stage.mouseDown = true; });
             stage.addEventListener("stagemouseup", function(e) { stage.mouseDown = false; });
@@ -67,41 +73,28 @@
             fpsLabel.x = 10; fpsLabel.y = 20;
             stage.addChild(fpsLabel);
 
-            debugLabel = new createjs.Text("-", "bold 18px Arial", "#ff7700");
-            debugLabel.x = 10; debugLabel.y = 40;
-            stage.addChild(debugLabel);
-
             playerLabel = new createjs.Text("-", "bold 18px Arial", "#ff7700");
-            playerLabel.x = 10; debugLabel.y = 60;
+            playerLabel.x = 10; playerLabel.y = 60;
             stage.addChild(playerLabel);
 
             world = new World( stage );
-            parallax = new Parallax( world, [ "images/ParallaxStars.png"], [1] );
+            parallax = new Parallax( world, ["images/ParallaxStars.png"], [1] );
 
             player = world.player;
         }
 
         function tick(){
+            var deltaTime = createjs.Ticker.getInterval() / 1000;
+
             stage.context.fillStyle = "#000000";
             stage.context.fillRect(0, 0, this.stage.width, this.stage.height);
 
-            var deltaTime = createjs.Ticker.getInterval() / 1000;
-
-            var startTime = new Date().getTime();
             world.update( deltaTime );
             parallax.update( deltaTime );
-            var endTime = new Date().getTime();
-            var updateTime = endTime - startTime;
+
+            stage.update();
 
             fpsLabel.text = Math.round( createjs.Ticker.getMeasuredFPS() ) + " fps";
-
-            startTime = new Date().getTime();
-            stage.update();
-            endTime = new Date().getTime();
-
-            var renderTime = endTime - startTime;
-            var tickTime = renderTime + updateTime;
-            debugLabel.text = " U " + updateTime + " R " + renderTime + " T " + tickTime + " E " + this.world.entities.length + " C " + this.world.collisions;
             playerLabel.text = player.stats.toString();
         }
     </script>

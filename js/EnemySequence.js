@@ -97,8 +97,8 @@ EnemySequenceFactory = Class.create({
         }
 
         if( end == -1 ) return null;
-
         var endPoint = this.getPoint( end );
+
         var control0 = new createjs.Point( Math.random() * this.stage.width, Math.random() * this.stage.height );
         var control1 = new createjs.Point( Math.random() * this.stage.width, Math.random() * this.stage.height );
         var path = new EnemyPath( this.stage, startPoint, control0, control1, endPoint );

@@ -55,14 +55,9 @@ SAT.getInterval = function( o, ax, ay ){
     var dot = this.dot(o.v0x, o.v0y, ax, ay);
     var ret = { min: dot, max: dot };
 
-    dot = this.dot(o.v1x, o.v1y, ax, ay);
-    ret.min = Math.min( ret.min, dot); ret.max = Math.max( ret.max, dot );
-
-    dot = this.dot(o.v2x, o.v2y, ax, ay);
-    ret.min = Math.min( ret.min, dot); ret.max = Math.max( ret.max, dot );
-
-    dot = this.dot(o.v3x, o.v3y, ax, ay);
-    ret.min = Math.min( ret.min, dot); ret.max = Math.max( ret.max, dot );
+    dot = this.dot(o.v1x, o.v1y, ax, ay); ret.min = Math.min( ret.min, dot); ret.max = Math.max( ret.max, dot );
+    dot = this.dot(o.v2x, o.v2y, ax, ay); ret.min = Math.min( ret.min, dot); ret.max = Math.max( ret.max, dot );
+    dot = this.dot(o.v3x, o.v3y, ax, ay); ret.min = Math.min( ret.min, dot); ret.max = Math.max( ret.max, dot );
 
     return ret;
 };

@@ -44,7 +44,10 @@ var Enemy = Class.create( DamageableEntity, {
         this.shape.y = this.y = point.y;
 
         this.tween.tick( deltaTime * this.tweenSpeed * 1000 );
-        //this.shape.rotation = -Math.atan2( this.world.player.x - this.x, this.world.player.y - this.y ) * 180 / Math.PI - 90;
+
+        if( this instanceof BigEnemy ){
+            this.shape.rotation = -Math.atan2( this.world.player.x - this.x, this.world.player.y - this.y ) * 180 / Math.PI - 90;
+        }
     },
 
     destroy: function( $super ){
@@ -59,18 +62,18 @@ var Enemy = Class.create( DamageableEntity, {
 
 var SmallEnemy = Class.create( Enemy, {
     initialize: function( $super, world, path, tween ){
-        $super( world, path, tween, "images/6-1.png", 1 );
+        var power = world.player.stats.getPowerLevel();
+        $super( world, path, tween, "images/6-1.png", 1 +  Math.round( Math.clip( power / 40, 0, 2 ) ) );
 
-        var power = this.world.player.stats.getPowerLevel();
-        this.dropRate = 0.5 - Math.clip( power / 30, 0, 1 ) * 0.4;
+        this.dropRate = 0.5 - Math.clip( power / 60, 0, 1 ) * 0.4;
     }
 });
 
 var BigEnemy = Class.create( Enemy, {
     initialize: function( $super, world, path, tween ){
-        $super( world, path, tween, "images/0-0.png", 4 );
+        var power = world.player.stats.getPowerLevel();
+        $super( world, path, tween, "images/0-0.png", 4 + Math.round( Math.clip( power / 40, 0, 2 ) ) );
 
-        var power = this.world.player.stats.getPowerLevel();
         this.stats.bulletSpeed = Math.clip( (power / 30), 3, 8) * 60;
         this.stats.fireRate = 30 - Math.round( Math.clip( (power - 20) / 8, 0, 20) );
         this.dropRate = 0.3 - Math.clip( power / 300, 0, 1 ) * 0.3;
@@ -80,22 +83,25 @@ var BigEnemy = Class.create( Enemy, {
         $super( deltaTime );
 
         if( this.tickTime % this.stats.fireRate == 0 ){
-            var nx = this.world.player.x - this.x + Math.random();
-            var ny = this.world.player.y - this.y + Math.random();
-            var len = Math.sqrt( nx*nx + ny*ny );
-            nx /= len; ny /= len;
+            if( this.x > 0 && this.x < this.stage.width && this.y > 0 && this.y < this.stage.height ){
+                var nx = this.world.player.x - this.x + Math.random();
+                var ny = this.world.player.y - this.y + Math.random();
+                var len = Math.sqrt( nx*nx + ny*ny );
+                nx /= len; ny /= len;
 
-            var bullet = new EnemyBullet( this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * this.stats.bulletSpeed, ny * this.stats.bulletSpeed, 3 );
-            this.world.addEntity( bullet );
+                var bullet = new EnemyBullet( this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * this.stats.bulletSpeed, ny * this.stats.bulletSpeed, 3 );
+                this.world.addEntity( bullet );
+                var ai = createjs.Sound.play("enemyShoot"); ai.setVolume( 0.7 );
+            }
         }
     }
 });
 
 var SpecialEnemy = Class.create( Enemy, {
     initialize: function( $super, world, path, tween ){
-        $super( world, path, tween, "images/0-2.png", 10 );
+        var power = world.player.stats.getPowerLevel();
+        $super( world, path, tween, "images/0-2.png", 10 +  Math.round( Math.clip( power / 40, 0, 4 ) ) );
 
-        var power = this.world.player.stats.getPowerLevel();
         this.stats.bulletSpeed = Math.clip( (power / 40), 2, 5) * 60;
         this.stats.fireRate = 8 - Math.round( Math.clip( power / 80, 0, 2) );
         this.dropRate = 0.8 - Math.clip( power / 300, 0, 1 ) * 0.8;
@@ -107,12 +113,15 @@ var SpecialEnemy = Class.create( Enemy, {
         $super( deltaTime );
 
         if( this.tickTime % this.stats.fireRate == 0 ){
-            var nx = Math.cos( this.rot * Math.PI / 180 );
-            var ny = Math.sin( this.rot * Math.PI / 180 );
-            this.rot += 10;
+            if( this.x > 0 && this.x < this.stage.width && this.y > 0 && this.y < this.stage.height ){
+                var nx = Math.cos( this.rot * Math.PI / 180 );
+                var ny = Math.sin( this.rot * Math.PI / 180 );
+                this.rot += 10;
 
-            var bullet = new EnemyBullet( this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * this.stats.bulletSpeed, ny * this.stats.bulletSpeed, 1 );
-            this.world.addEntity( bullet );
+                var bullet = new EnemyBullet( this.world, this.x + nx * this.shape.width / 2, this.y + ny * this.shape.height / 2, nx * this.stats.bulletSpeed, ny * this.stats.bulletSpeed, 1 );
+                this.world.addEntity( bullet );
+                var ai = createjs.Sound.play("enemyShoot"); ai.setVolume( 0.7 );
+            }
         }
     }
 });

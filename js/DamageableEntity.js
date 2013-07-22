@@ -18,6 +18,16 @@ var DamageableEntity = Class.create( CollidableEntity, {
 
     hit: function( damage ){
         this.stats.hp = Math.clip( this.stats.hp - damage, 0, this.stats.maxHp );
+        if( this.stats.hp == 0 ) this.onDead();
+        else this.onHit();
+    },
+
+    onDead: function(){
+        var ai = createjs.Sound.play("explosion"); ai.setVolume( 0.3 );
+    },
+
+    onHit: function(){
+        createjs.Sound.play("hit");
     },
 
     isAlive: function( $super ){
